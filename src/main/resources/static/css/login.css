@@ -1,44 +1,10 @@
 /*
- * Specific styles of signin component
- */
-/*
- * General styles
- */
-/*
-body, html {
-    height: 100%;
-    background-repeat: no-repeat;
-    background-image: linear-gradient(rgb(104, 145, 162), rgb(12, 97, 33));
-}
-*/
-
-
-/*
  * Card component
  */
 .card {
-    max-width: 350px;
+    max-width: 300px;
     background-color: #F7F7F7;
-    /* just in case there no content*/
-    padding: 20px 25px 30px;
-    margin: 50px auto 25px;
-    /* shadows and rounded borders */
-    -moz-border-radius: 2px;
-    -webkit-border-radius: 2px;
-    border-radius: 2px;
-    -moz-box-shadow: 0 2px 2px rgba(0, 0, 0, 0.3);
-    -webkit-box-shadow: 0 2px 2px rgba(0, 0, 0, 0.3);
-    box-shadow: 0 2px 2px rgba(0, 0, 0, 0.3);
 }
-
-/*.btn {
-    font-weight: 700;
-    height: 36px;
-    -moz-user-select: none;
-    -webkit-user-select: none;
-    user-select: none;
-    cursor: default;
-}*/
 
 .profile-img-card {
     width: 96px;
@@ -48,19 +14,6 @@ body, html {
     -moz-border-radius: 50%;
     -webkit-border-radius: 50%;
     border-radius: 50%;
-}
-.image-container {
-    position: relative;
-}
-.image-container:hover {
-    filter: brightness(90%);
-    color:white;
-}
-.image-container .caption {
-    position: absolute;
-    top: 75%;
-    left: 0;
-    width: 100%;
 }
 
 /*
@@ -73,13 +26,12 @@ body, html {
     margin: 10px 0 0;
     min-height: 1em;
 }
-.reauth-email {
+.span-email {
     display: block;
     color: #404040;
     line-height: 2;
     margin-bottom: 10px;
     font-size: 14px;
-    text-align: center;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -88,54 +40,6 @@ body, html {
     box-sizing: border-box;
 }
 
-.form-signin #inputEmail,
-.form-signin #inputPassword {
-    direction: ltr;
-    height: 44px;
-    font-size: 16px;
-}
-.form-signin input[type=email],
-.form-signin input[type=password],
-.form-signin input[type=text],
-.form-signin button,
-.form-signup input[type=email],
-.form-signup input[type=password],
-.form-signup input[type=text],
-.form-signup button {
-    width: 100%;
-    display: block;
-    margin-bottom: 10px;
-    z-index: 1;
-    position: relative;
-    -moz-box-sizing: border-box;
-    -webkit-box-sizing: border-box;
-    box-sizing: border-box;
-}
-.form-signin .form-control:focus, .form-signup .form-control:focus {
-    border-color: rgb(104, 145, 162);
-    outline: 0;
-    -webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.075),0 0 8px rgb(104, 145, 162);
-    box-shadow: inset 0 1px 1px rgba(0,0,0,.075),0 0 8px rgb(104, 145, 162);
-}
-.btn.btn-signin, .btn.btn-signup {
-    background-color: rgb(104, 145, 162);
-    padding: 0;
-    font-weight: 700;
-    font-size: 14px;
-    height: 36px;
-    -moz-border-radius: 3px;
-    -webkit-border-radius: 3px;
-    border-radius: 3px;
-    border: none;
-    -o-transition: all 0.218s;
-    -moz-transition: all 0.218s;
-    -webkit-transition: all 0.218s;
-    transition: all 0.218s;
-}
-.btn.btn-signin:hover,
-.btn.btn-signup:hover {
-    background-color: #007bff;
-}
 .forgot-password {
     color: rgb(104, 145, 162);
 }

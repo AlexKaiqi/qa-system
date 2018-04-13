@@ -1,0 +1,44 @@
+package com.alex.qasystem.dto;
+
+import com.alex.qasystem.entity.User;
+import com.alex.qasystem.enums.UserRegistrationStateEnum;
+
+public class UserRegisterExecution {
+    private Integer state;
+    private String stateInfo;
+    private User user;
+
+    public UserRegisterExecution(UserRegistrationStateEnum userRegistrationStateEnum) {
+        this(userRegistrationStateEnum, null);
+    }
+
+    public UserRegisterExecution(UserRegistrationStateEnum userRegistrationStateEnum, User user) {
+        this.state = userRegistrationStateEnum.getState();
+        this.stateInfo = userRegistrationStateEnum.getStateInfo();
+        this.user = user;
+    }
+
+    public Integer getState() {
+        return state;
+    }
+
+    public void setState(Integer state) {
+        this.state = state;
+    }
+
+    public String getStateInfo() {
+        return stateInfo;
+    }
+
+    public void setStateInfo(String stateInfo) {
+        this.stateInfo = stateInfo;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+}

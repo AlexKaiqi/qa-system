@@ -14,39 +14,61 @@ import java.util.Date;
 public interface UserMapper {
 
     /**
-     * @param username 用户名
-     * @return 符合条件的用户
+     * 根据邮箱和密码查询用户
+     *
+     * @param email    邮箱
+     * @return 符合条件的 User
      */
-    @Select("select * from user where username = #{username} and password = #{password")
+    @Select("select * from user where email = #{email}")
     @Results({
-        @Result(property = "id", column = "id", javaType = Long.class),
-        @Result(property = "username", column = "username", javaType = String.class),
-        @Result(property = "password", column = "password", javaType = String.class),
-        @Result(property = "profileName", column = "profile_name", javaType = String.class),
-        @Result(property = "profileImgSrc", column = "profile_img_src", javaType = String.class),
-        @Result(property = "email", column = "email", javaType = String.class),
-        @Result(property = "groupId", column = "group_id", javaType = Integer.class),
-        @Result(property = "reputation", column = "reputation", javaType = Integer.class),
-        @Result(property = "registerTime", column = "register_time", javaType = Date.class),
-        @Result(property = "lastLoginTime", column = "last_login_time", javaType = Date.class),
-        @Result(property = "lastEditTime", column = "last_edit_time", javaType = Date.class),
-        @Result(property = "status", column = "status", javaType = Integer.class),
+            @Result(property = "id", column = "id", javaType = Integer.class),
+            @Result(property = "email", column = "email", javaType = String.class),
+            @Result(property = "password", column = "password", javaType = String.class),
+            @Result(property = "profileName", column = "profile_name", javaType = String.class),
+            @Result(property = "profileImgSrc", column = "profile_img_src", javaType = String.class),
+            @Result(property = "groupId", column = "group_id", javaType = Integer.class),
+            @Result(property = "reputation", column = "reputation", javaType = Integer.class),
+            @Result(property = "registerTime", column = "register_time", javaType = Date.class),
+            @Result(property = "lastLoginTime", column = "last_login_time", javaType = Date.class),
+            @Result(property = "lastEditTime", column = "last_edit_time", javaType = Date.class),
+            @Result(property = "status", column = "status", javaType = Integer.class),
     })
-    User selectUserByUsernameAndPassword(String username, String password);
+    User selectByEmail(@Param("email") String email);
+
+    @Select("select * from user where id = #{id}")
+    @Results({
+            @Result(property = "id", column = "id", javaType = Integer.class),
+            @Result(property = "email", column = "email", javaType = String.class),
+            @Result(property = "password", column = "password", javaType = String.class),
+            @Result(property = "profileName", column = "profile_name", javaType = String.class),
+            @Result(property = "profileImgSrc", column = "profile_img_src", javaType = String.class),
+            @Result(property = "groupId", column = "group_id", javaType = Integer.class),
+            @Result(property = "reputation", column = "reputation", javaType = Integer.class),
+            @Result(property = "registerTime", column = "register_time", javaType = Date.class),
+            @Result(property = "lastLoginTime", column = "last_login_time", javaType = Date.class),
+            @Result(property = "lastEditTime", column = "last_edit_time", javaType = Date.class),
+            @Result(property = "status", column = "status", javaType = Integer.class),
+    })
+    User selectById(@Param("id") Integer id);
 
     /**
-     * 新增用户
-     * @param user 用户实体
+     * 插入新的用户
+     *
+     * @param user User 实例
+     * @return 插入数据条数, 正确返回应该为 1
      */
-    @Insert("INSERT INTO user(username, password) VALUES(#{username}, #{password}, #{profileName)")
-    @Options(useGeneratedKeys = true, keyColumn = "id")
-    void insertUser(User user);
+    @Insert("INSERT INTO user(email, password, profile_name, profile_img_src, group_id, reputation, register_time, last_login_time, last_edit_time, status) " +
+            "VALUES(#{email}, #{password}, #{profileName}, #{profileImgSrc}, #{groupId}, #{reputation}, #{registerTime}, #{lastLoginTime}, #{lastEditTime}, #{status})")
+    @Options(useGeneratedKeys = true, keyColumn = "id", keyProperty = "id")
+    Integer insert(User user);
 
-    @Update("UPDATE user SET password = #{password} where id = #{id}")
-    void updateUser(User user);
-
+    /**
+     * 根据 ID 删除用户
+     *
+     * @param id 用户 ID
+     * @return  删除的用户数量, 正确返回结果应该是 1.
+     */
     @Delete("DELETE FROM user WHERE id= #{id}")
-    void deleteUser(int id);
-
+    Integer deleteById(Integer id);
 
 }

@@ -6,12 +6,11 @@ import java.util.Date;
  * @author Alex
  */
 public class User {
-    private Long id;
-    private String username;
+    private Integer id;
+    private String email;
     private String password;
     private String profileName;
     private String profileImgSrc;
-    private String email;
     private Integer groupId;
     private Integer reputation;
     private Date registerTime;
@@ -19,21 +18,22 @@ public class User {
     private Date lastEditTime;
     private Integer status;
 
-    public Long getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
-    public String getUsername() {
-        return username;
+    public String getEmail() {
+        return email;
     }
 
-    public void setUsername(String username) {
-        this.username = username;
+    public void setEmail(String email) {
+        this.email = email;
     }
+
 
     public String getPassword() {
         return password;
@@ -57,14 +57,6 @@ public class User {
 
     public void setProfileImgSrc(String profileImgSrc) {
         this.profileImgSrc = profileImgSrc;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
     }
 
     public Integer getGroupId() {

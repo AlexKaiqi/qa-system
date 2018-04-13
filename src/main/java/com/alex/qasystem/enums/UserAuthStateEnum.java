@@ -1,20 +1,23 @@
 package com.alex.qasystem.enums;
 
 /**
- * 用户验证返回状态
+ * 用户身份验证, 登录, 注册返回状态
  *
  * @author Alex
  */
 public enum UserAuthStateEnum {
 
     /**
-     * LOGIN_FAIL 用户存在但与密码不匹配
+     * SIGN_IN_FAIL 用户存在但与密码不匹配
      * SUCCESS 登录成功
      * NULL_AUTH_INFO 注册信息为空
      */
-    LOGIN_FAIL(-1, "密码或帐号输入有误"),
-    SUCCESS(0, "操作成功"),
-    NULL_AUTH_INFO(-1006,"注册信息为空");
+    SUCCESS(0, "身份验证成功"),
+    ALREADY_LOGGED_IN(1, "用户已经处于登录状态了"),
+    WRONG_PASSWORD(-1, "帐号密码不匹配"),
+    USER_NOT_EXISTS(-1001, "该邮箱尚未注册"),
+    TOKEN_NOT_EXISTS_OR_EXPIRED(-1002, "token不存在或已经过期"),
+    NULL_AUTH_INFO(-1003,"缺少身份验证信息");
 
     private int state;
 
