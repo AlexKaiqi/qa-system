@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head lang="en">
+    <th:block th:fragment="head" xmlns:th="http://www.thymeleaf.org">
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <link rel="stylesheet" href="/bootstrap-4.0.0-dist/css/bootstrap.min.css"
+              th:href="@{/bootstrap-4.0.0-dist/css/bootstrap.min.css}">
+        <link rel="stylesheet" href="/open-iconic/font/css/open-iconic-bootstrap.css"
+              th:href="@{/open-iconic/font/css/open-iconic-bootstrap.css}">
+        <link rel="stylesheet" href="/quill/quill.snow.css" th:href="@{/quill/quill.snow.css}">
+        <link rel="stylesheet" href="/quill/quill.core.css" th:href="@{/quill/quill.core.css}">
+        <link rel="stylesheet" href="/quill/quill.bubble.css" th:href="@{/quill/quill.bubble.css}">
+    </th:block>
+</head>
+<body>
+
+<nav th:fragment="nav" class="navbar navbar-expand-md navbar-light bg-light mb-3">
+    <div class="container">
+        <a class="navbar-brand" href="/">Q&A System</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExample04"
+                aria-controls="navbarsExample04" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarsExample04">
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="/questions">Questions</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/questions/tagged">Tags</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/users/list-info">Users</a>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="http://example.com" id="dropdown04" data-toggle="dropdown"
+                       aria-haspopup="true" aria-expanded="false">More</a>
+                    <div class="dropdown-menu" aria-labelledby="dropdown04">
+                        <a class="dropdown-item" href="#">Action</a>
+                        <a class="dropdown-item" href="#">Another action</a>
+                        <a class="dropdown-item" href="#">Something else here</a>
+                    </div>
+                </li>
+            </ul>
+            <form class="form-inline my-2 my-md-0 search-form">
+                <input class="form-control" type="text" placeholder="Search">
+            </form>
+            <ul class="navbar-nav">
+                <li class="navbar-item">
+                    <a class="nav-link nav-profile-name" href="/user/account" hidden></a>
+                    <a class="nav-link nav-sign-in" href="/user/sign-in">sign-in</a>
+                </li>
+                <li class="navbar-item">
+                    <a class="nav-link" href="#" onclick="signOff()">sign-off</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<footer th:fragment="footer">
+    Copyright: Alex Kai
+</footer>
+
+<th:block th:fragment="script">
+    <script src="/js/jquery-3.2.1.min.js" th:src="@{/js/jquery-3.2.1.min.js}"></script>
+    <script src="/js/popper.min.js" th:src="@{/js/popper.min.js}"></script>
+    <script src="/bootstrap-4.0.0-dist/js/bootstrap.min.js"
+            th:src="@{/bootstrap-4.0.0-dist/js/bootstrap.min.js}"></script>
+    <script src="/quill/quill.js" th:src="@{/quill/quill.js}"></script>
+    <script src="/js/qasystem-commen.js" th:src="@{/js/qasystem-commen.js}"></script>
+</th:block>
+
+</body>
+<script>
+
+    /**
+     * 判断登录状态, 替换登录标志
+     */
+    var $navProfileName = $('.nav-profile-name');
+    if (localStorage.getItem('token') === null
+        || localStorage.getItem('PROFILE_NAME') === null
+        || localStorage.getItem('PROFILE_IMG_SRC') === null
+        || localStorage.getItem('EMAIL') === null) {
+        $navProfileName.attr('hidden', true);
+    } else {
+        $navProfileName.attr('hidden', false);
+        $('.nav-sign-in').attr('hidden', true);
+        $navProfileName.text(localStorage.getItem('PROFILE_NAME'));
+    }
+
+
+    /**
+     * 登出
+     */
+    function signOff() {
+        var formData = {
+            token: localStorage.getItem('token')
+        };
+        localStorage.removeItem('token');
+        localStorage.removeItem('EMAIL');
+        localStorage.removeItem('PROFILE_NAME');
+        localStorage.removeItem('PROFILE_IMG_SRC');
+        location.reload();
+        /*        $.ajax({
+                    type: 'POST', // define the type of HTTP verb we want to use (POST for our form)
+                    url: '/user/sign-off', // the url where we want to POST
+                    data: formData, // our data object
+                    dataType: 'json', // what type of data do we expect back from the server
+                    encode: true,
+                    success: function(data) {
+                        if (data.success === true) {
+
+                        } else {
+                            alert(data.message);
+                        }
+                    }
+                });*/
+    }
+
+    $('.search-form').submit(function(event) {
+        var text = $(this).children('input').val();
+        if(text.length > 100) {
+            alert("请输入合法内容");
+            event.preventDefault();
+        }
+        var tagRegex = /(\[\w+] ?)+/;
+        var url;
+        if (text.match(tagRegex)) {
+            text = text.substr(1, text.length-2);
+            var tags = text.replace(/] ?\[/g, '+');
+            url = '/questions/tagged/'+tags;
+        } else {
+            url = '/questions/search?keywords='+text;
+        }
+        location.replace(url);
+        event.preventDefault();
+    });
+</script>
+</html>

@@ -1,7 +1,7 @@
 /*
  * Card component
  */
-.card {
+.sign-in-card,.sign-up-card {
     max-width: 300px;
     background-color: #F7F7F7;
 }
@@ -26,7 +26,7 @@
     margin: 10px 0 0;
     min-height: 1em;
 }
-.span-email {
+.sign-in-card .span-email {
     display: block;
     color: #404040;
     line-height: 2;
@@ -38,13 +38,4 @@
     -moz-box-sizing: border-box;
     -webkit-box-sizing: border-box;
     box-sizing: border-box;
-}
-
-.forgot-password {
-    color: rgb(104, 145, 162);
-}
-.forgot-password:hover,
-.forgot-password:active,
-.forgot-password:focus{
-    color: rgb(12, 97, 33);
 }

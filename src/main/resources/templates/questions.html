@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head lang="en">
+    <title>问题</title>
+    <meta name="description" content="问题"/>
+    <meta th:replace="fragments/snipplets:: head">
+</head>
+<body>
+
+<div th:replace="fragments/snipplets :: nav">...</div>
+
+
+<div class="container">
+    <div class="row mb-4">
+        <h2>Question Title</h2>
+        <a href="/questions/ask" class="ml-auto">
+            <button type="button" class="btn btn-lg btn-outline-success">提问</button>
+        </a>
+    </div>
+
+    <div class="row" th:each="question: ${questions}">
+        <div class="col-2">
+            <div class="profile-info-card">
+                <img class="img-fluid" th:src="${question.getUser().getProfileImgSrc()}" src="#">
+                <p th:text="${question.getUser().getProfileName()}" class="d-inline-block mr-3">Profile Name</p>
+                <p th:text="${'RP: '+question.getUser().getReputation()}" class="d-inline-block"> RP: #</p>
+            </div>
+        </div>
+        <div class="col-10">
+            <div  class="card">
+                <div class="card-body">
+
+                    <a th:href="@{${'/questions/'+question.getId()+'/'+question.getTitle()}}" class="card-link text-secondary">
+                        <h5 th:text="${question.getTitle()}" class="card-title">Question Title</h5>
+                    </a>
+                    <p class="card-text" th:text="${question.getApprovals()+' approvals'}">0 approvals</p>
+                    <p class="card-text" th:text="${question.getAnswers().size()+' answers'}">0 answers</p>
+                    <th:block th:each="tag: ${question.getTags()}">
+                        <a class="card-link" th:text="${tag.getTitle()}" th:href="@{${'/questions/tagged/'+tag.getTitle()}}">tag
+                            Title
+                        </a>
+                    </th:block>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<div th:replace="fragments/snipplets:: footer"></div>
+
+<script th:replace="fragments/snipplets:: script"></script>
+<script>
+
+</script>
+</body>
+</html>

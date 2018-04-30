@@ -6,7 +6,7 @@ public enum  UserRegistrationStateEnum {
      *
      */
     SUCCESS(0, "注册成功"),
-    INVALID_REGISTRATION_INFO(-1001, "注册信息不合法"),
+    INVALID_REGISTRATION_PARAMETERS(-1001, "注册信息不合法"),
     USER_ALREADY_EXISTS(-1002, "邮箱已经被注册");
 
     private int state;

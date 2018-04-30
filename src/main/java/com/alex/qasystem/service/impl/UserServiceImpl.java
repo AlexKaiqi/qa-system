@@ -1,20 +1,26 @@
 package com.alex.qasystem.service.impl;
 
-import com.alex.qasystem.dao.AuthTokenMapper;
-import com.alex.qasystem.dao.UserMapper;
+import com.alex.qasystem.dao.*;
 import com.alex.qasystem.dto.UserAuthExecution;
-import com.alex.qasystem.dto.UserRegisterExecution;
+import com.alex.qasystem.dto.UserRegistrationExecution;
+import com.alex.qasystem.entity.Answer;
 import com.alex.qasystem.entity.AuthToken;
+import com.alex.qasystem.entity.Question;
 import com.alex.qasystem.entity.User;
 import com.alex.qasystem.enums.UserAuthStateEnum;
 import com.alex.qasystem.enums.UserRegistrationStateEnum;
 import com.alex.qasystem.service.UserService;
 import com.alex.qasystem.util.SecurityUtil;
 import com.alex.qasystem.util.ValidationUtil;
+import org.aspectj.lang.annotation.Aspect;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * @author Alex
@@ -23,6 +29,32 @@ import java.util.Date;
 public class UserServiceImpl implements UserService {
     private UserMapper userMapper;
     private AuthTokenMapper authTokenMapper;
+    private QuestionCommentMapper questionCommentMapper;
+    private QuestionApprovalMapper questionApprovalMapper;
+    private QuestionMapper questionMapper;
+    private AnswerMapper answerMapper;
+    private AnswerCommentMapper answerCommentMapper;
+    private AnswerApprovalMapper answerApprovalMapper;
+
+    private Logger log = LoggerFactory.getLogger(this.getClass());
+
+    @Autowired
+    public void setQuestionCommentMapper(QuestionCommentMapper questionCommentMapper) {this.questionCommentMapper = questionCommentMapper;}
+    @Autowired
+    public void setQuestionApprovalMapper(QuestionApprovalMapper questionApprovalMapper) {this.questionApprovalMapper = questionApprovalMapper;}
+    @Autowired
+    public void setQuestionMapper(QuestionMapper questionMapper) {this.questionMapper = questionMapper;}
+    @Autowired
+    public void setAnswerMapper(AnswerMapper answerMapper) {this.answerMapper = answerMapper;}
+    @Autowired
+    public void setAnswerCommentMapper(AnswerCommentMapper answerCommentMapper) {
+        this.answerCommentMapper = answerCommentMapper;
+    }
+    @Autowired
+    public void setAnswerApprovalMapper(AnswerApprovalMapper answerApprovalMapper) {
+        this.answerApprovalMapper = answerApprovalMapper;
+    }
+
     /**
      * token 有效时间 两个小时
      */
@@ -46,9 +78,9 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserAuthExecution login(String email, String password) {
 
-        // 缺少验证信息
+        // 登录信息不合法
         if (email == null || password == null) {
-            return new UserAuthExecution(UserAuthStateEnum.NULL_AUTH_INFO);
+            return new UserAuthExecution(UserAuthStateEnum.INVALID_LOGIN_PARAMETERS);
         }
 
         User user = userMapper.selectByEmail(email);
@@ -63,19 +95,26 @@ public class UserServiceImpl implements UserService {
             return new UserAuthExecution(UserAuthStateEnum.WRONG_PASSWORD);
         }
 
+        // 已经登录
+        AuthToken authToken = authTokenMapper.selectByUserId(user.getId());
+        if (authToken != null) {
+            UserAuthExecution userAuthExecution = new UserAuthExecution(UserAuthStateEnum.SUCCESS);
+            userAuthExecution.setUser(user);
+            userAuthExecution.setToken(authToken.getToken());
+            return userAuthExecution;
+        }
+
         // 验证成功
         else {
-
             // 为验证通过的用户设置token
-            AuthToken authToken = new AuthToken();
+            authToken = new AuthToken();
             authToken.setUserId(user.getId());
             authToken.setUserGroupId(user.getGroupId());
             authToken.setToken(SecurityUtil.generateToken());
             Date currentTime = new Date();
             authToken.setCreateTime(currentTime);
             authToken.setExpireTime(new Date(currentTime.getTime() + TOKEN_DURATION));
-            Integer authTokenId = authTokenMapper.insert(authToken);
-            authToken.setId(authTokenId);
+            authTokenMapper.insert(authToken);
 
             // 保护隐私, 将密码设为空
             user.setPassword(null);
@@ -90,20 +129,20 @@ public class UserServiceImpl implements UserService {
 
     }
 
-
     @Override
-    public UserRegisterExecution register(String email, String profileName, String password) {
+    @Transactional
+    public UserRegistrationExecution register(String email, String profileName, String password) {
 
         // 数据校验
         if (!ValidationUtil.isValidEmail(email) ||
                 !ValidationUtil.isValidProfileName(profileName) ||
                 !ValidationUtil.isValidPassword(password)) {
-            return new UserRegisterExecution(UserRegistrationStateEnum.INVALID_REGISTRATION_INFO);
+            return new UserRegistrationExecution(UserRegistrationStateEnum.INVALID_REGISTRATION_PARAMETERS);
         }
 
         // 邮箱已注册
         if (userMapper.selectByEmail(email) != null) {
-            return new UserRegisterExecution(UserRegistrationStateEnum.USER_ALREADY_EXISTS);
+            return new UserRegistrationExecution(UserRegistrationStateEnum.USER_ALREADY_EXISTS);
         }
 
         // 开始注册
@@ -118,7 +157,43 @@ public class UserServiceImpl implements UserService {
         user.setRegisterTime(new Date());
         userMapper.insert(user);
         user = userMapper.selectById(user.getId());
-        return new UserRegisterExecution(UserRegistrationStateEnum.SUCCESS, user);
+        return new UserRegistrationExecution(UserRegistrationStateEnum.SUCCESS, user);
+    }
+
+    @Override
+    public User getUserIdByToken(String token) {
+        AuthToken authToken = authTokenMapper.selectByToken(token);
+        if (authToken == null) {
+            return null;
+        }
+        return userMapper.selectById(authToken.getUserId());
+    }
+
+    @Override
+    @Transactional
+    public void updateReputation(Integer userId) {
+        User user = userMapper.selectById(userId);
+        List<Question> questions = questionMapper.selectByUserId(userId);
+        List<Answer> answers = answerMapper.selectByUserId(userId);
+        int reputation = 0;
+        for (Question question: questions) {
+            reputation += Math.sqrt(question.getApprovals() - question.getDisapprovals()) * 3.0;
+            reputation += question.getQuestionComments().size() * 1.0;
+            for (Answer answer: question.getAnswers()) {
+                reputation += Math.sqrt(answer.getApprovals() - answer.getDisapprovals()) * 0.5;
+            }
+        }
+        for (Answer answer: answers) {
+            reputation += Math.sqrt(answer.getApprovals() - answer.getDisapprovals()) * 3.0;
+            reputation += answer.getAnswerComments().size() * 1.0;
+        }
+        reputation += questionCommentMapper.countCommentsByUserId(userId) * 10.0;
+        reputation += answerCommentMapper.countCommentsByUserId(userId) * 10.0;
+        User updateUser = new User();
+        updateUser.setId(user.getId());
+        updateUser.setReputation(reputation);
+        userMapper.updateById(updateUser);
+
     }
 
 }

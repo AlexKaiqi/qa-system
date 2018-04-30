@@ -1,6 +1,5 @@
 package com.alex.qasystem.controller;
 
-import com.alex.qasystem.entity.User;
 import com.alex.qasystem.enums.UserAuthStateEnum;
 import com.alex.qasystem.enums.UserRegistrationStateEnum;
 import org.junit.Before;
@@ -16,6 +15,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 
 
@@ -35,8 +35,9 @@ public class UserControllerTest {
     }
 
     @Test
+    @Transactional
     public void login() throws Exception {
-        mvc.perform(MockMvcRequestBuilders.get("/user/sign-in")
+        mvc.perform(MockMvcRequestBuilders.post("/user/sign-in")
                 .param("email", "alexkai@gmail.com")
                 .param("password", "12345")
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
@@ -50,11 +51,12 @@ public class UserControllerTest {
     }
 
     @Test
+    @Transactional
     public void signUp() throws Exception {
         mvc.perform(MockMvcRequestBuilders.post("/user/sign-up")
-                .param("email", "test8@gmail.com")
+                .param("email", "test@gmail.com")
                 .param("password", "12345")
-                .param("profileName", "Jerry")
+                .param("profileName", "ÍõÏþºì")
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .accept(MediaType.APPLICATION_JSON_UTF8)
                 .session(session)

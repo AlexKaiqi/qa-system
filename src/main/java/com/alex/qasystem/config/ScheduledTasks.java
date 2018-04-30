@@ -2,8 +2,10 @@ package com.alex.qasystem.config;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 
 import com.alex.qasystem.dao.AuthTokenMapper;
+import com.alex.qasystem.entity.Question;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,10 +27,9 @@ public class ScheduledTasks {
     @Autowired
     public void setAuthTokenMapper(AuthTokenMapper authTokenMapper) {this.authTokenMapper = authTokenMapper;}
 
-    @Scheduled(fixedRate = 600000)
-    public void reportCurrentTime() {
+    @Scheduled(fixedRate = 1600000)
+    public void removeExpiredToken() {
         Integer count = authTokenMapper.deleteExpiredToken();
         log.info("Scheduled Task: delete {} rows of expired token {}", count, DATE_FORMAT.format(new Date()));
     }
-
 }

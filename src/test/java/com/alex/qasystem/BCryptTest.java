@@ -2,6 +2,7 @@ package com.alex.qasystem;
 
 import com.alex.qasystem.util.BCrypt;
 import org.junit.Test;
+
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 

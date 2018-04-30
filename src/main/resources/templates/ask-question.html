@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head lang="en">
+    <title>首页</title>
+    <meta name="description" content="首页"/>
+    <meta th:replace="fragments/snipplets:: head">
+</head>
+<body>
+
+<div th:replace="fragments/snipplets :: nav">...</div>
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-9">
+            <form id="question-form">
+                <div class="form-group">
+                    <label for="tags">标签</label>
+                    <input type="text" class="form-control" id="tags" placeholder="问题标签, 使用 + 号分隔, 最多5个" required/>
+                </div>
+                <div class="form-group">
+                    <label for="title">标题</label>
+                    <input type="text" class="form-control" id="title" placeholder="请简要而精确描述问题内容" required/>
+                </div>
+                <div class="form-group">
+                    <label for="question-description">问题描述</label>
+                    <input name="question-description" id="question-description" type="hidden">
+                    <div id="question-editor" style="height: 130px;">
+
+                    </div>
+                </div>
+
+                <button class="btn btn-primary" type="submit">Save Profile</button>
+            </form>
+
+        </div>
+        <div class="col-md-3">
+            <h3>帮助</h3>
+            <ul class="list-group">
+                <li class="list-group-item">提问题前先搜一搜,说不定已经有人回答了</li>
+                <li class="list-group-item">描述问题时,不妨试试</li>
+                <li class="list-group-item">标记代码块后效果更好</li>
+                <li class="list-group-item">填写标签注意使用英文逗号分割</li>
+                <li class="list-group-item">标签要具体,准确. 最好使用已有标签</li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<div th:replace="fragments/snipplets:: footer"></div>
+
+<script th:replace="fragments/snipplets:: script"></script>
+
+<script>
+
+    var quill = new Quill('#question-editor', {
+        modules: {
+            toolbar: [
+                ['bold', 'italic', 'underline', 'strike'],        // toggled buttons
+                ['blockquote', 'code-block'],
+                [{'header': 1}, {'header': 2}],               // custom button values
+                [{'list': 'ordered'}, {'list': 'bullet'}],
+                [{'header': [1, 2, 3, 4, 5, 6, false]}],
+
+                [{'color': []}, {'background': []}],          // dropdown with defaults from theme
+                [{'font': []}],
+                [{'align': []}],
+
+                ['clean']                                         // remove formatting button
+            ]
+        },
+        placeholder: '问题描述',
+        theme: 'snow'
+    });
+
+
+    $('#question-form').submit(function (event) {
+
+        var tags = $('#tags').val().split(/\+/g);
+        var formData = {
+            title: $('#title').val(),
+            description: JSON.stringify(quill.getContents()),
+            token: localStorage.getItem("token"),
+            tags: tags
+        };
+
+        $.ajax({
+            type: 'POST', // define the type of HTTP verb we want to use (POST for our form)
+            url: '/questions/ask', // the url where we want to POST
+            data: formData, // our data object
+            dataType: 'json', // what type of data do we expect back from the server
+            encode: true
+        }).then(function (data) {
+            if (data.success === true) {
+                location.replace('/questions/' + data.question.id + '/' + data.question.title);
+            } else {
+                alert(data.message);
+            }
+        });
+        // stop the form from submitting the normal way and refreshing the page
+        event.preventDefault();
+    })
+
+</script>
+</body>
+</html>
