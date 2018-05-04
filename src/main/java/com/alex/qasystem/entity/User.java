@@ -116,7 +116,7 @@ public class User {
     public String toString() {
         try {
             ObjectMapper objectMapper = new ObjectMapper();
-            objectMapper.setDateFormat(new SimpleDateFormat("yyyy-MM-dd HH:mm a z"));
+            objectMapper.setDateFormat(new SimpleDateFormat("yyyy-MM-dd HH:mm"));
             return objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(this);
         } catch (JsonProcessingException e) {
             e.printStackTrace();

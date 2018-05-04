@@ -65,4 +65,6 @@ public class UserControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.stateInfo").value(UserRegistrationStateEnum.SUCCESS.getStateInfo()))
                 .andDo(MockMvcResultHandlers.print());
     }
+
+
 }

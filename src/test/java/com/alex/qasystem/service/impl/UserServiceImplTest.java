@@ -50,4 +50,6 @@ public class UserServiceImplTest {
         userAuthExecution = userService.login("alexkai@gmail.com", "12345");
         assertThat(userAuthExecution.getState(), is(UserAuthStateEnum.SUCCESS.getState()));
     }
+
+
 }

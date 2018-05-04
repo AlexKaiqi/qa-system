@@ -6,6 +6,7 @@ import com.alex.qasystem.entity.Tag;
 import org.apache.ibatis.annotations.*;
 import org.springframework.stereotype.Component;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -27,7 +28,8 @@ public interface MedalRecordMapper {
             @Result(property = "id", column = "id", javaType = Integer.class),
             @Result(property = "medalId", column = "medal_id", javaType = Integer.class),
             @Result(property = "userId", column = "user_id", javaType = Integer.class),
-            @Result(property = "awardTime", column = "award_time", javaType = Integer.class)
+            @Result(property = "awardTime", column = "award_time", javaType = Date.class),
+            @Result(property = "medal", column = "medal_id", javaType = Medal.class, one = @One(select = "com.alex.qasystem.dao.MedalMapper.selectById"))
     })
     MedalRecord selectById(@Param("id") Integer id);
 

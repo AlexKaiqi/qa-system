@@ -41,6 +41,8 @@ public interface UserMapper {
             "<if test='profileName != null'>    profile_name    = #{profileName},        </if>" +
             "<if test='profileImgSrc != null'>  profile_img_src = #{profileImgSrc},      </if>" +
             "<if test='reputation != null'>     reputation      = #{reputation},         </if>" +
+            "<if test='groupId != null'>        group_id        = #{groupId},            </if>" +
+            "<if test='registerTime != null'>   register_time   = #{registerTime},       </if>" +
             "<if test='lastEditTime != null'>   last_edit_time  = #{lastEditTime},       </if>" +
             "<if test='lastLoginTime != null'>  last_login_time = #{lastLoginTime},      </if>" +
             "<if test='status != null'>         status          = #{status},             </if>" +

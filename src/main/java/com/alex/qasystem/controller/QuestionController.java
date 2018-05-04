@@ -264,6 +264,4 @@ public class QuestionController {
         modelMap.addAttribute("questions", questionService.queryQuestionByTitleRegexp(".*"));
         return "questions";
     }
-
-
 }

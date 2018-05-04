@@ -30,4 +30,8 @@ public interface QuestionService {
     QuestionApproval addQuestionApproval(Integer userId, Integer questionId, Integer type);
 
     AnswerApproval addAnswerApproval(Integer userId, Integer answerId, Integer type);
+
+    Question updateQuestionContent(Integer questionId, String title, String description);
+
+    Answer updateAnswerContent(Integer answerId, String content);
 }

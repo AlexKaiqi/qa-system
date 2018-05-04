@@ -5,6 +5,8 @@ import com.alex.qasystem.entity.Tag;
 import org.apache.ibatis.annotations.*;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+
 /**
  * @author Alex
  */
@@ -30,5 +32,5 @@ public interface MedalMapper {
             @Result(property = "description", column = "description", javaType = String.class),
             @Result(property = "iconSrc", column = "icon_src", javaType = String.class)
     })
-    Medal selectById(Integer id);
+    Medal selectById(@Param("id")Integer id);
 }

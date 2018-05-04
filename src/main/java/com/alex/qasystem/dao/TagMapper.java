@@ -15,11 +15,6 @@ public interface TagMapper {
     @Options(useGeneratedKeys = true, keyColumn = "id")
     Integer insert(Tag tag);
 
-    /*@Insert("INSERT INTO tag(title, description, icon_src) VALUES" +
-            "(#{title}, #{description}, #{iconSrc}) ")
-    @Options(useGeneratedKeys = true, keyColumn = "id")
-    Integer insertIfTitleNotExists(Tag tag);*/
-
     @Delete("DELETE FROM tag WHERE id = #{id} ")
     Integer deleteById(@Param("id") Integer id);
 
@@ -35,17 +30,13 @@ public interface TagMapper {
     Integer updateById(Tag tag);
 
     @Select("SELECT * FROM tag WHERE id = #{id} ")
-    @Results(id="tagResult", value = {
+    @Results(id = "tagResult", value = {
             @Result(property = "id", column = "id", javaType = Integer.class),
             @Result(property = "title", column = "title", javaType = String.class),
             @Result(property = "description", column = "description", javaType = String.class),
             @Result(property = "iconSrc", column = "icon_src", javaType = String.class)
     })
     Tag selectById(Integer id);
-
-    @Select("SELECT * FROM tag")
-    @ResultMap("tagResult")
-    List<Tag> selectAll();
 
     @Select("SELECT * FROM tag WHERE title = #{title} ")
     @ResultMap("tagResult")
@@ -56,4 +47,7 @@ public interface TagMapper {
     @ResultMap("tagResult")
     List<Tag> selectByQuestionId(@Param("questionId") Integer questionId);
 
+    @Select("SELECT * FROM tag")
+    @ResultMap("tagResult")
+    List<Tag> selectAll();
 }

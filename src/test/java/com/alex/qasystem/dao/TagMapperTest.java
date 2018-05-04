@@ -28,6 +28,7 @@ public class TagMapperTest {
         tag.setTitle("test tag");
         tag.setDescription("test content");
         assertThat(tagMapper.insert(tag), is(1));
+        assertThat(tagMapper.selectById(tag.getId()).toString(), is(tag.toString()));
         System.out.println(tagMapper.selectById(tag.getId()));
     }
 
@@ -36,7 +37,9 @@ public class TagMapperTest {
     public void insertDuplicateTitle() throws DuplicateKeyException {
         Tag tag = new Tag();
         tag.setTitle("java");
-        tagMapper.insert(tag);
+        System.out.println(tagMapper.selectByTitle("java"));
+        assertThat(tagMapper.insert(tag), is(0));
+
     }
 
     @Test
@@ -46,6 +49,7 @@ public class TagMapperTest {
         tag.setTitle("test tag");
         tag.setDescription("test content");
         assertThat(tagMapper.insert(tag), is(1));
+        System.out.println(tagMapper.selectById(tag.getId()));
         assertThat(tagMapper.deleteById(tag.getId()), is(1));
         assertNull(tagMapper.selectById(tag.getId()));
     }
@@ -53,24 +57,37 @@ public class TagMapperTest {
     @Test
     @Transactional
     public void updateById() {
-        Tag tag = new Tag();
-        tag.setId(1);
-        tag.setTitle("test");
-        tag.setDescription("test info");
-        tag.setIconSrc("/images/tag/test.jpg");
-        assertThat(tagMapper.updateById(tag), is(1));
-        tag = tagMapper.selectById(1);
-        assertThat(tag.getTitle(), is("test"));
-        assertThat(tag.getDescription(), is("test info"));
-        assertThat(tag.getIconSrc(), is("/images/tag/test.jpg"));
-        System.out.println(tag);
+        System.out.println(tagMapper.selectById(1));
+        Tag updated = new Tag();
+        updated.setId(1);
+        updated.setTitle("test");
+        updated.setDescription("test info");
+        updated.setIconSrc("/images/tag/test.jpg");
+        assertThat(tagMapper.updateById(updated), is(1));
+        Tag tag = tagMapper.selectById(1);
+        assertThat(tag.toString(), is(updated.toString()));
+        System.out.println(updated);
     }
 
     @Test
     @Transactional
     public void selectById() {
-        Tag tag = tagMapper.selectById(1);
-        assertThat(tag.getTitle(), is("java"));
+        Tag tag = new Tag();
+        tag.setId(1);
+        tag.setTitle("java");
+        tag.setDescription("Java (not to be confused with JavaScript or JScript or JS) is a general-purpose object-oriented programming language designed to be used in conjunction with the Java Virtual Machine (JVM). \"Java platform\" is the name for a computing system that has installed tools for developing and running Java programs. Use this tag for questions referring to the Java programming language or Java platform tools.");
+        assertThat(tagMapper.selectById(1).toString(), is(tag.toString()));
+        System.out.println(tag);
+    }
+
+    @Test
+    @Transactional
+    public void selectByTitle() {
+        Tag tag = new Tag();
+        tag.setId(1);
+        tag.setTitle("java");
+        tag.setDescription("Java (not to be confused with JavaScript or JScript or JS) is a general-purpose object-oriented programming language designed to be used in conjunction with the Java Virtual Machine (JVM). \"Java platform\" is the name for a computing system that has installed tools for developing and running Java programs. Use this tag for questions referring to the Java programming language or Java platform tools.");
+        assertThat(tagMapper.selectByTitle("java").toString(), is(tag.toString()));
         System.out.println(tag);
     }
 
@@ -79,6 +96,14 @@ public class TagMapperTest {
     public void selectByQuestionId() {
         List<Tag> tags = tagMapper.selectByQuestionId(1);
         assertThat(tags.size(), is(2));
+        System.out.println(tags);
+    }
+
+    @Test
+    @Transactional
+    public void selectAll() {
+        List<Tag> tags = tagMapper.selectAll();
+        assertThat(tags.size(), is(6));
         System.out.println(tags);
     }
 }

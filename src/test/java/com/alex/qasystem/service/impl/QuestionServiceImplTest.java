@@ -29,7 +29,7 @@ public class QuestionServiceImplTest {
     @Test
     @Transactional
     public void queryQuestionByTitleRegexp() {
-        List<Question> questions = questionService.queryQuestionByTitleRegexp("When to");
+        List<Question> questions = questionService.queryQuestionByTitleRegexp(".*");
         System.out.println(questions);
     }
 
@@ -42,4 +42,5 @@ public class QuestionServiceImplTest {
         Integer userId = 2;
         System.out.println(questionService.addQuestion(userId, title, description, tags));
     }
+
 }

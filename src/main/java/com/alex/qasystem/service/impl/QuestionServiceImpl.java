@@ -154,4 +154,22 @@ public class QuestionServiceImpl implements QuestionService {
         return answerApproval;
     }
 
+    @Override
+    @Transactional
+    public Question updateQuestionContent(Integer questionId, String title, String description) {
+        Question question = new Question();
+        question.setId(questionId);
+        question.setTitle(title);
+        question.setDescription(description);
+        questionMapper.updateById(question);
+        return questionMapper.selectById(questionId);
+    }
+
+    @Override
+    @Transactional
+    public Answer updateAnswerContent(Integer answerId, String content) {
+
+        return null;
+    }
+
 }
