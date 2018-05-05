@@ -70,11 +70,28 @@
     <script src="/bootstrap-4.0.0-dist/js/bootstrap.min.js"
             th:src="@{/bootstrap-4.0.0-dist/js/bootstrap.min.js}"></script>
     <script src="/quill/quill.js" th:src="@{/quill/quill.js}"></script>
-    <script src="/js/qasystem-commen.js" th:src="@{/js/qasystem-commen.js}"></script>
-</th:block>
-
-</body>
-<script>
+    <script>
+    /**
+     * 检查token是否有效
+     */
+    function hasValidToken() {
+        var token = localStorage.getItem("token");
+        if (token === null) return false;
+        var formData = {token: token};
+        var data;
+        $.ajax({
+            type: 'POST', // define the type of HTTP verb we want to use (POST for our form)
+            url: '/token/check', // the url where we want to POST
+            data: formData, // our data object
+            dataType: 'json', // what type of data do we expect back from the server
+            encode: true,
+            async: false,
+            success: function(result) {
+                data = result;
+            }
+        });
+        return data.success === true;
+    };
 
     /**
      * 判断登录状态, 替换登录标志
@@ -139,4 +156,8 @@
         event.preventDefault();
     });
 </script>
+</th:block>
+
+</body>
+
 </html>

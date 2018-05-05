@@ -214,11 +214,13 @@
      * 提交回答表单
      */
     $('.answer-form').submit(function (event) {
-        /* if (!hasValidToken()) {
-             alert("请先登录");
-             event.preventDefault();
-             return;
-         }*/
+        if(!hasValidToken()) {
+            alert("请先登录");
+            localStorage.removeItem("token");
+            event.preventDefault();
+            location.replace('/user/sign-in');
+            return;
+        }
         var url = $(this).attr('action');
         var formData = {
             content: JSON.stringify(answerQuill.getContents()),
@@ -268,12 +270,13 @@
      */
     $('.comment-form').each(function (i) {
         $(this).submit(function (event) {
-            /*var a = hasValidToken();
-            if(!a) {
+            if(!hasValidToken()) {
                 alert("请先登录");
+                localStorage.removeItem("token");
                 event.preventDefault();
+                location.replace('/user/sign-in');
                 return;
-            }*/
+            }
             var url = $(this).attr('action');
             var commentEditorId = $(this).find('.comment-editor').attr('id');
             var content = JSON.stringify(commentEditors[commentEditorId].getContents());
@@ -302,12 +305,13 @@
 
     $('.approval-form').each(function(i) {
         $(this).submit(function(event) {
-            /*var a = hasValidToken();
-            if(!a) {
+            if(!hasValidToken()) {
                 alert("请先登录");
+                localStorage.removeItem("token");
                 event.preventDefault();
+                location.replace('/user/sign-in');
                 return;
-            }*/
+            }
             var url = $(this).attr('action');
             var formData = {
                 token: localStorage.getItem('token'),

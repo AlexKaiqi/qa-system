@@ -19,19 +19,16 @@ public interface QuestionService {
 
     Question getQuestionById(Integer id);
 
-    Question addQuestion(Integer userId, String title, String description, List<String> tags);
+    Question addQuestion(User user, String title, String description, List<String> tags);
 
-    Answer addAnswer(Integer userId, Integer questionId, String content);
+    Question updateQuestionContent(User user, Integer questionId, String title, String description, List<String> tags);
 
-    QuestionComment addQuestionComment(Integer userId, Integer questionId, String content);
+    Question closeQuestion(User user, Integer questionId);
 
-    AnswerComment addAnswerComment(Integer userId, Integer answerId, String content);
+    QuestionComment addQuestionComment(User user, Integer questionId, String content);
 
-    QuestionApproval addQuestionApproval(Integer userId, Integer questionId, Integer type);
+    QuestionComment deleteQuestionComment(User user, Integer questionCommentId);
 
-    AnswerApproval addAnswerApproval(Integer userId, Integer answerId, Integer type);
+    QuestionApproval addQuestionApproval(User user, Integer questionId, Integer type);
 
-    Question updateQuestionContent(Integer questionId, String title, String description);
-
-    Answer updateAnswerContent(Integer answerId, String content);
 }

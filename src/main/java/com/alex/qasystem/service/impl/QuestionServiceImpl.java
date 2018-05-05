@@ -10,7 +10,6 @@ import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -29,23 +28,25 @@ public class QuestionServiceImpl implements QuestionService {
     private Logger log = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
-    public void setTagMapper(TagMapper tagMapper) {this.tagMapper = tagMapper;}
-    @Autowired
-    public void setQuestionCommentMapper(QuestionCommentMapper questionCommentMapper) {this.questionCommentMapper = questionCommentMapper;}
-    @Autowired
-    public void setQuestionApprovalMapper(QuestionApprovalMapper questionApprovalMapper) {this.questionApprovalMapper = questionApprovalMapper;}
-    @Autowired
-    public void setQuestionMapper(QuestionMapper questionMapper) {this.questionMapper = questionMapper;}
-    @Autowired
-    public void setAnswerMapper(AnswerMapper answerMapper) {this.answerMapper = answerMapper;}
-    @Autowired
-    public void setAnswerCommentMapper(AnswerCommentMapper answerCommentMapper) {
-        this.answerCommentMapper = answerCommentMapper;
+    public void setTagMapper(TagMapper tagMapper) {
+        this.tagMapper = tagMapper;
     }
+
     @Autowired
-    public void setAnswerApprovalMapper(AnswerApprovalMapper answerApprovalMapper) {
-        this.answerApprovalMapper = answerApprovalMapper;
+    public void setQuestionCommentMapper(QuestionCommentMapper questionCommentMapper) {
+        this.questionCommentMapper = questionCommentMapper;
     }
+
+    @Autowired
+    public void setQuestionApprovalMapper(QuestionApprovalMapper questionApprovalMapper) {
+        this.questionApprovalMapper = questionApprovalMapper;
+    }
+
+    @Autowired
+    public void setQuestionMapper(QuestionMapper questionMapper) {
+        this.questionMapper = questionMapper;
+    }
+
 
     @Override
     public List<Question> queryQuestionByTitleRegexp(String titleRegexp) {
@@ -64,11 +65,13 @@ public class QuestionServiceImpl implements QuestionService {
 
     @Override
     @Transactional
-   public Question addQuestion(Integer userId, String title, String description, List<String> tags) {
-       // 插入question
-       List<Tag> tagList = new ArrayList<>();
-        for (String tagTitle: tags) {
-            Tag tag =new Tag(tagTitle);
+    public Question addQuestion(User user, String title, String description, List<String> tags) {
+
+        Integer userId = user.getId();
+        // 插入question
+        List<Tag> tagList = new ArrayList<>();
+        for (String tagTitle : tags) {
+            Tag tag = new Tag(tagTitle);
             try {
                 tagMapper.insert(tag);
             } catch (DuplicateKeyException e) {
@@ -87,28 +90,18 @@ public class QuestionServiceImpl implements QuestionService {
         questionMapper.insert(question);
 
         // 插入question和tag的关联关系
-       List<Integer> tagIds = tagList.stream().map(Tag::getId).collect(Collectors.toList());
-       questionMapper.insertTagReferences(question.getId(), tagIds);
+        List<Integer> tagIds = tagList.stream().map(Tag::getId).collect(Collectors.toList());
+        questionMapper.insertTagReferences(question.getId(), tagIds);
 
-       return questionMapper.selectById(question.getId());
+        return questionMapper.selectById(question.getId());
     }
+
+
 
     @Override
     @Transactional
-    public Answer addAnswer(Integer userId, Integer questionId, String content) {
-        Answer answer = new Answer();
-        answer.setUserId(userId);
-        answer.setQuestionId(questionId);
-        answer.setContent(content);
-        answer.setStatus(0);
-        answer.setCreateTime(new Date());
-        answerMapper.insert(answer);
-        return answer;
-    }
-
-    @Override
-    @Transactional
-    public QuestionComment addQuestionComment(Integer userId, Integer questionId, String content) {
+    public QuestionComment addQuestionComment(User user, Integer questionId, String content) {
+        Integer userId = user.getId();
         QuestionComment questionComment = new QuestionComment();
         questionComment.setUserId(userId);
         questionComment.setQuestionId(questionId);
@@ -118,21 +111,12 @@ public class QuestionServiceImpl implements QuestionService {
         return questionComment;
     }
 
-    @Override
-    @Transactional
-    public AnswerComment addAnswerComment(Integer userId, Integer answerId, String content) {
-        AnswerComment answerComment = new AnswerComment();
-        answerComment.setUserId(userId);
-        answerComment.setAnswerId(answerId);
-        answerComment.setContent(content);
-        answerComment.setCreateTime(new Date());
-        answerCommentMapper.insert(answerComment);
-        return answerComment;
-    }
+
 
     @Override
     @Transactional
-    public QuestionApproval addQuestionApproval(Integer userId, Integer questionId, Integer type) {
+    public QuestionApproval addQuestionApproval(User user, Integer questionId, Integer type) {
+        Integer userId = user.getId();
         QuestionApproval questionApproval = new QuestionApproval();
         questionApproval.setUserId(userId);
         questionApproval.setQuestionId(questionId);
@@ -142,34 +126,82 @@ public class QuestionServiceImpl implements QuestionService {
         return questionApproval;
     }
 
-    @Override
-    @Transactional
-    public AnswerApproval addAnswerApproval(Integer userId, Integer answerId, Integer type) {
-        AnswerApproval answerApproval = new AnswerApproval();
-        answerApproval.setUserId(userId);
-        answerApproval.setAnswerId(answerId);
-        answerApproval.setCreateTime(new Date());
-        answerApproval.setType(type);
-        answerApprovalMapper.insert(answerApproval);
-        return answerApproval;
-    }
+
 
     @Override
-    @Transactional
-    public Question updateQuestionContent(Integer questionId, String title, String description) {
-        Question question = new Question();
-        question.setId(questionId);
+    public Question updateQuestionContent(User user, Integer questionId, String title, String description, List<String> tags) {
+
+        Integer userId = user.getId();
+        Integer groupId = user.getGroupId();
+        Question question = questionMapper.selectById(questionId);
+        if (question == null) {
+            throw new RuntimeException("问题不存在, questionId: " + questionId);
+        }
+        if (!question.getUserId().equals(userId) && 1 != groupId) {
+            throw new RuntimeException("没有修改问题的权限, userId: " + userId);
+        }
         question.setTitle(title);
         question.setDescription(description);
         questionMapper.updateById(question);
-        return questionMapper.selectById(questionId);
+        if (tags != null) {
+            // 删除现有的标签
+            questionMapper.deleteTagReferencesByQuestionId(questionId);
+
+            List<Tag> tagList = new ArrayList<>();
+            // 插入标签
+            for (String tagTitle : tags) {
+                Tag tag = new Tag(tagTitle);
+                try {
+                    tagMapper.insert(tag);
+                } catch (DuplicateKeyException e) {
+                    log.debug("Tag already exists: " + tagTitle);
+                    tag = tagMapper.selectByTitle(tagTitle);
+                }
+                tagList.add(tag);
+            }
+            // 插入question和tag的关联关系
+            List<Integer> tagIds = tagList.stream().map(Tag::getId).collect(Collectors.toList());
+            questionMapper.insertTagReferences(question.getId(), tagIds);
+            question.setTags(tagList);
+        }
+
+        return question;
+    }
+
+
+
+
+    @Override
+    public Question closeQuestion(User user, Integer questionId) {
+        Integer userId = user.getId();
+        Integer groupId = user.getGroupId();
+        Question question = questionMapper.selectById(questionId);
+        if (question == null) {
+            throw new RuntimeException("问题不存在, questionId: " + questionId);
+        }
+        if (!question.getUserId().equals(userId) && 1 != groupId) {
+            throw new RuntimeException("没有修改问题的权限, userId: " + userId);
+        }
+        question.setStatus(1);
+        questionMapper.updateById(question);
+        return question;
     }
 
     @Override
-    @Transactional
-    public Answer updateAnswerContent(Integer answerId, String content) {
-
-        return null;
+    public QuestionComment deleteQuestionComment(User user, Integer questionCommentId) {
+        Integer userId = user.getId();
+        Integer groupId = user.getGroupId();
+        QuestionComment questionComment = questionCommentMapper.selectById(questionCommentId);
+        if (questionComment == null) {
+            throw new RuntimeException("评论不存在, questionCommentId: " + questionCommentId);
+        }
+        if (!questionComment.getUserId().equals(userId) && 1 != groupId) {
+            throw new RuntimeException("没有删除评论的权限, userId: " + userId);
+        }
+        questionCommentMapper.deleteById(questionCommentId);
+        return questionComment;
     }
+
+
 
 }

@@ -75,6 +75,14 @@
 
     $('#question-form').submit(function (event) {
 
+        if(!hasValidToken()) {
+            alert("请先登录");
+            localStorage.removeItem("token");
+            event.preventDefault();
+            location.replace('/user/sign-in');
+            return;
+        }
+
         var tags = $('#tags').val().split(/\+/g);
         var formData = {
             title: $('#title').val(),

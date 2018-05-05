@@ -12,47 +12,51 @@ import com.alex.qasystem.enums.UserRegistrationStateEnum;
 import com.alex.qasystem.service.UserService;
 import com.alex.qasystem.util.SecurityUtil;
 import com.alex.qasystem.util.ValidationUtil;
-import org.aspectj.lang.annotation.Aspect;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.commons.CommonsMultipartFile;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author Alex
  */
 @Service
 public class UserServiceImpl implements UserService {
+
     private UserMapper userMapper;
     private AuthTokenMapper authTokenMapper;
     private QuestionCommentMapper questionCommentMapper;
-    private QuestionApprovalMapper questionApprovalMapper;
     private QuestionMapper questionMapper;
     private AnswerMapper answerMapper;
     private AnswerCommentMapper answerCommentMapper;
-    private AnswerApprovalMapper answerApprovalMapper;
 
     private Logger log = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
-    public void setQuestionCommentMapper(QuestionCommentMapper questionCommentMapper) {this.questionCommentMapper = questionCommentMapper;}
+    public void setQuestionCommentMapper(QuestionCommentMapper questionCommentMapper) {
+        this.questionCommentMapper = questionCommentMapper;
+    }
+
     @Autowired
-    public void setQuestionApprovalMapper(QuestionApprovalMapper questionApprovalMapper) {this.questionApprovalMapper = questionApprovalMapper;}
+    public void setQuestionMapper(QuestionMapper questionMapper) {
+        this.questionMapper = questionMapper;
+    }
+
     @Autowired
-    public void setQuestionMapper(QuestionMapper questionMapper) {this.questionMapper = questionMapper;}
-    @Autowired
-    public void setAnswerMapper(AnswerMapper answerMapper) {this.answerMapper = answerMapper;}
+    public void setAnswerMapper(AnswerMapper answerMapper) {
+        this.answerMapper = answerMapper;
+    }
+
     @Autowired
     public void setAnswerCommentMapper(AnswerCommentMapper answerCommentMapper) {
         this.answerCommentMapper = answerCommentMapper;
-    }
-    @Autowired
-    public void setAnswerApprovalMapper(AnswerApprovalMapper answerApprovalMapper) {
-        this.answerApprovalMapper = answerApprovalMapper;
     }
 
     /**
@@ -172,18 +176,19 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public void updateReputation(Integer userId) {
+
         User user = userMapper.selectById(userId);
         List<Question> questions = questionMapper.selectByUserId(userId);
         List<Answer> answers = answerMapper.selectByUserId(userId);
         int reputation = 0;
-        for (Question question: questions) {
+        for (Question question : questions) {
             reputation += Math.sqrt(question.getApprovals() - question.getDisapprovals()) * 3.0;
             reputation += question.getQuestionComments().size() * 1.0;
-            for (Answer answer: question.getAnswers()) {
+            for (Answer answer : question.getAnswers()) {
                 reputation += Math.sqrt(answer.getApprovals() - answer.getDisapprovals()) * 0.5;
             }
         }
-        for (Answer answer: answers) {
+        for (Answer answer : answers) {
             reputation += Math.sqrt(answer.getApprovals() - answer.getDisapprovals()) * 3.0;
             reputation += answer.getAnswerComments().size() * 1.0;
         }
@@ -193,7 +198,32 @@ public class UserServiceImpl implements UserService {
         updateUser.setId(user.getId());
         updateUser.setReputation(reputation);
         userMapper.updateById(updateUser);
+    }
 
+    @Override
+    public User updateProfileImg(User user, CommonsMultipartFile profileImg) {
+        //TODO
+        String imageBasePath = "src/resources/static/images/";
+        String fileName = user.getId() + profileImg.getContentType();
+        String profileImgSrc = "images/avatars/"+fileName;
+        return null;
+    }
+
+    @Override
+    public Map<String, Object> changePassword(User user, String newPassword, String oldPassword) {
+        Map<String, Object> map = new HashMap<>(2);
+        if (!SecurityUtil.checkpw(oldPassword, user.getPassword())) {
+            map.put("success", false);
+            map.put("message", "密码不正确");
+        } else if(!ValidationUtil.isValidPassword(newPassword)) {
+            map.put("success", false);
+            map.put("message", "新密码不合法");
+        } else {
+            user.setPassword(SecurityUtil.hashpw(newPassword));
+            userMapper.updateById(user);
+            map.put("success", true);
+        }
+        return map;
     }
 
 }

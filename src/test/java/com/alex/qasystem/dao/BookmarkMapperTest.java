@@ -20,6 +20,7 @@ public class BookmarkMapperTest {
     @Autowired
     private BookmarkMapper bookmarkMapper;
 
+
     @Test
     @Transactional
     public void insert() {
@@ -27,7 +28,9 @@ public class BookmarkMapperTest {
         bookmark.setUserId(1);
         bookmark.setQuestionId(1);
         assertThat(bookmarkMapper.insert(bookmark), is(1));
-        assertThat(bookmarkMapper.selectById(bookmark.getId()).toString(), is(bookmark.toString()));
+        Bookmark selected = bookmarkMapper.selectById(bookmark.getId());
+        assertThat(selected.getUserId(), is(1));
+        assertThat(selected.getQuestionId(), is(1));
         System.out.println(bookmark);
     }
 
@@ -58,11 +61,9 @@ public class BookmarkMapperTest {
     @Test
     @Transactional
     public void selectById() {
-        Bookmark bookmark = new Bookmark();
-        bookmark.setId(1);
-        bookmark.setUserId(1);
-        bookmark.setQuestionId(1);
-        assertThat(bookmarkMapper.selectById(1).toString(), is(bookmark.toString()));
+        Bookmark bookmark = bookmarkMapper.selectById(1);
+        assertThat(bookmark.getUserId(), is(1));
+        assertThat(bookmark.getQuestionId(), is(1));
         System.out.println(bookmark);
     }
 

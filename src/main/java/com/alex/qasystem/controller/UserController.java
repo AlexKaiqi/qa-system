@@ -19,59 +19,30 @@ import java.util.Map;
  * @author Alex
  */
 @Controller
-@RequestMapping("/user")
 public class UserController {
     private UserService userService;
-    private QuestionService questionService;
 
     @Autowired
     public void setUserService(UserService userService) {
         this.userService = userService;
     }
-    @Autowired
-    public void setQuestionService(QuestionService questionService) { this.questionService = questionService; }
 
-    @PostMapping("/sign-in")
-    @ResponseBody
-    public UserAuthExecution signIn(@RequestParam String email, @RequestParam String password) {
-        return userService.login(email, password);
-    }
-
-    @GetMapping("sign-in")
+    @GetMapping("/user/sign-in")
     public String signIn() {
         return "login";
     }
 
-    @PostMapping("/sign-up")
-    @ResponseBody
-    public UserRegistrationExecution signUp(@RequestParam String email,
-                                            @RequestParam String profileName,
-                                            @RequestParam String password) {
-        return userService.register(email, profileName, password);
-    }
-
-    @GetMapping("/sign-up")
+    @GetMapping("/user/sign-up")
     public String signUp() {
         return "login";
     }
 
-    @PostMapping("/token")
-    @ResponseBody
-    public Map<String, Object> authToken(@RequestParam String token) {
-        User user = userService.getUserIdByToken(token);
-        Map<String, Object> map = new HashMap<>(1);
-        if (user == null) {
-            map.put("success", false);
-        } else {
-            map.put("success", true);
-        }
-        return map;
-    }
-
-    @GetMapping("/account")
+    @GetMapping("/user/account")
     public String account(@RequestParam String token,
                           ModelMap modelMap) {
 
         return "account";
     }
+
+
 }

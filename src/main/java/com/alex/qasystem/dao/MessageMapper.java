@@ -11,6 +11,7 @@ import java.util.List;
 @Mapper
 @Component
 public interface MessageMapper {
+
     @Insert("INSERT INTO message (type, receiver_id, content, send_time, receive_time, status) VALUES" +
             "(#{type}, #{receiverId}, #{content}, #{sendTime}, #{receiveTime}, #{status})")
     @Options(useGeneratedKeys = true, keyColumn = "id")
@@ -19,8 +20,22 @@ public interface MessageMapper {
     @Delete("DELETE FROM message WHERE id = #{id} ")
     Integer deleteById(@Param("id") Integer id);
 
-    @Delete("DELETE FROM message WHERE status = 1")
-    Integer deleteAllRead();
+/*    @Delete("DELETE FROM message WHERE status = 1")
+    Integer deleteAllRead();*/
+
+    @Update("<script>" +
+            "UPDATE message" +
+            "<set>" +
+            "<if test='type != null'>         type         = #{type},            </if>" +
+            "<if test='receiverId != null'>          receiver_id           = #{receiverId},             </if>" +
+            "<if test='content != null'>    content     = #{content},       </if>" +
+            "<if test='sendTime != null'>     send_time     = #{sendTime},         </if>" +
+            "<if test='receiveTime != null'>   receive_time  = #{receiveTime},       </if>" +
+            "<if test='status != null'>         status          = #{status},             </if>" +
+            "</set>" +
+            "WHERE id = #{id}" +
+            "</script>")
+    Integer updateById(Message Message);
 
     @Select("SELECT * FROM message WHERE id = #{id} ")
     @Results(id = "messageResult", value = {
@@ -32,7 +47,7 @@ public interface MessageMapper {
             @Result(property = "receiveTime", column = "receive_time", javaType = Date.class),
             @Result(property = "status", column = "status", javaType = Integer.class)
     })
-    MedalRecord selectById(@Param("id") Integer id);
+    Message selectById(@Param("id") Integer id);
 
     @Select("SELECT * FROM message WHERE receiver_id = #{receiverId} ")
     @ResultMap("messageResult")

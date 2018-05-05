@@ -40,7 +40,9 @@ public class QuestionServiceImplTest {
         List<String> tags = Arrays.asList("java", "spring", "mysql");
         String description = "some description";
         Integer userId = 2;
-        System.out.println(questionService.addQuestion(userId, title, description, tags));
+        User user = new User();
+        user.setId(userId);
+        System.out.println(questionService.addQuestion(user, title, description, tags));
     }
 
 }

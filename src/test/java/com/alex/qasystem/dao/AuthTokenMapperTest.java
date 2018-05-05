@@ -48,7 +48,7 @@ public class AuthTokenMapperTest {
         authToken.setExpireTime(new Date(DATETIME + TWO_HOURS));
         System.out.println(authToken);
         assertThat(authTokenMapper.insert(authToken), is(1));
-        assertThat(authTokenMapper.deleteExpiredToken(), is(1));
+        assertThat(authTokenMapper.deleteExpiredToken(), is(2));
         assertNull(authTokenMapper.selectByToken(TOKEN));
     }
 
