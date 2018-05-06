@@ -1,16 +1,14 @@
 package com.alex.qasystem.config;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
-
 import com.alex.qasystem.dao.AuthTokenMapper;
-import com.alex.qasystem.entity.Question;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 /**
  * @author Alex
@@ -25,7 +23,9 @@ public class ScheduledTasks {
     private AuthTokenMapper authTokenMapper;
 
     @Autowired
-    public void setAuthTokenMapper(AuthTokenMapper authTokenMapper) {this.authTokenMapper = authTokenMapper;}
+    public void setAuthTokenMapper(AuthTokenMapper authTokenMapper) {
+        this.authTokenMapper = authTokenMapper;
+    }
 
     @Scheduled(fixedRate = 1600000, initialDelay = 1600000)
     public void removeExpiredToken() {

@@ -97,7 +97,6 @@ public class QuestionServiceImpl implements QuestionService {
     }
 
 
-
     @Override
     @Transactional
     public QuestionComment addQuestionComment(User user, Integer questionId, String content) {
@@ -112,7 +111,6 @@ public class QuestionServiceImpl implements QuestionService {
     }
 
 
-
     @Override
     @Transactional
     public QuestionApproval addQuestionApproval(User user, Integer questionId, Integer type) {
@@ -125,7 +123,6 @@ public class QuestionServiceImpl implements QuestionService {
         questionApprovalMapper.insert(questionApproval);
         return questionApproval;
     }
-
 
 
     @Override
@@ -169,8 +166,6 @@ public class QuestionServiceImpl implements QuestionService {
     }
 
 
-
-
     @Override
     public Question closeQuestion(User user, Integer questionId) {
         Integer userId = user.getId();
@@ -201,7 +196,6 @@ public class QuestionServiceImpl implements QuestionService {
         questionCommentMapper.deleteById(questionCommentId);
         return questionComment;
     }
-
 
 
 }

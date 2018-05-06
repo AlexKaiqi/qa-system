@@ -8,7 +8,6 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 /**
  * Extend spring mvc default configuration
  *
- *
  * @author Alex
  */
 @Configuration

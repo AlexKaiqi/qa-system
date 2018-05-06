@@ -95,10 +95,10 @@
                         <p th:text="${answer.getUser().getProfileName()}"></p>
                         <p th:text="${'reputations: '+answer.getUser().getReputation()}"></p>
                     </div>
-                    <form class="approval-form  d-inline-block" th:action="@{${'/answers/'+answer.getId()+'/approval'}}" method="post">
+                    <form class="approval-form  d-inline-block" th:action="@{${'questions/'+question.getId()+'/answers/'+answer.getId()+'/approval'}}" method="post">
                         <button type="submit" class="btn btn-sm btn-success"><span class="oi oi-thumb-up"></span><span th:text="${answer.getApprovals()}"></span></button>
                     </form>
-                    <form class="approval-form  d-inline-block"  th:action="@{${'/answers/'+answer.getId()+'/disapproval'}}" method="post">
+                    <form class="approval-form  d-inline-block"  th:action="@{${'questions/'+question.getId()+'/answers/'+answer.getId()+'/disapproval'}}" method="post">
                         <button type="submit" class="btn btn-sm btn-danger"><span class="oi oi-thumb-down"></span><span th:text="${answer.getDisapprovals()}"></span></button>
                     </form>
                 </div>
@@ -128,7 +128,7 @@
                         </ul>
                         <!-- 添加评论 -->
                         <form class="comment-form" method="post"
-                              th:action="@{${'/answers/'+answer.getId()+'/comment'}}">
+                              th:action="@{${'questions/'+question.getId()+'/answers/'+answer.getId()+'/comment'}}">
                             <div class="row">
                                 <div class="col-11">
                                     <div class="comment-editor" th:id="${'add-answer-comment-'+answer.getId()}"></div>

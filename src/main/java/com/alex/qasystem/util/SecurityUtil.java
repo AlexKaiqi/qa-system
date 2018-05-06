@@ -4,6 +4,7 @@ import java.security.SecureRandom;
 
 public class SecurityUtil {
     private static final SecureRandom RANDOM = new SecureRandom();
+
     public static String generateToken(String prefix) {
         return prefix + Long.toString(Math.abs(RANDOM.nextLong()), 25);
     }

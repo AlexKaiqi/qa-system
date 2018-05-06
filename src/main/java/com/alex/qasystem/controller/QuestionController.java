@@ -2,7 +2,10 @@ package com.alex.qasystem.controller;
 
 import com.alex.qasystem.dao.TagMapper;
 import com.alex.qasystem.dto.TaggedQuestion;
-import com.alex.qasystem.entity.*;
+import com.alex.qasystem.entity.Question;
+import com.alex.qasystem.entity.QuestionComment;
+import com.alex.qasystem.entity.Tag;
+import com.alex.qasystem.entity.User;
 import com.alex.qasystem.service.QuestionService;
 import com.alex.qasystem.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +22,6 @@ public class QuestionController {
     private QuestionService questionService;
     private UserService userService;
     private TagMapper tagMapper;
-    private static final Pattern TAG_PATTERN = Pattern.compile("\\[([\\w-_ ]+)\\]");
 
     @Autowired
     public void setQuestionService(QuestionService questionService) {
@@ -34,62 +36,6 @@ public class QuestionController {
     @Autowired
     public void setTagMapper(TagMapper tagMapper) {
         this.tagMapper = tagMapper;
-    }
-
-    @GetMapping("/questions/tagged/{tags}")
-    public String queryQuestionsByTags(@PathVariable String tags,
-                                       ModelMap modelMap) {
-        tags = tags.replaceAll("\\+", "|");
-        List<Question> questions = questionService.queryQuestionByTagRegexp(tags);
-        modelMap.addAttribute("questions", questions);
-        return "questions";
-    }
-
-    @GetMapping("/questions/search")
-    public String queryQuestionsByTitle(@RequestParam("keywords") String keywords,
-                                        ModelMap modelMap) {
-        // keywords = keywords.replaceAll("\\+", "|");
-        List<Question> questions = questionService.queryQuestionByTitleRegexp(keywords);
-        modelMap.addAttribute("questions", questions);
-        return "questions";
-    }
-
-    @GetMapping("/questions/{questionId}/{questionTitle}")
-    public String getQuestion(@PathVariable Integer questionId,
-                              @PathVariable(required = false) String questionTitle,
-                              ModelMap modelMap) {
-        Question question = questionService.getQuestionById(questionId);
-        modelMap.addAttribute("question", question);
-        return "question";
-    }
-
-    @GetMapping("/questions/ask")
-    public String askQuestion() {
-        return "ask-question";
-    }
-
-    @GetMapping("/questions/tagged")
-    public String getTaggedQuestions(ModelMap modelMap) {
-        List<Tag> tags = tagMapper.selectAll();
-
-        List<TaggedQuestion> taggedQuestons = new ArrayList<>();
-        for (Tag tag : tags) {
-            List<Question> questions = questionService.queryQuestionByTagRegexp(tag.getTitle());
-            taggedQuestons.add(new TaggedQuestion(tag, questions));
-        }
-        modelMap.addAttribute("taggedQuestions", taggedQuestons);
-        return "tags";
-    }
-
-    @GetMapping("/questions")
-    public String getFilteredQuestions(@RequestParam(required = false) List<String> tags,
-                                       @RequestParam(required = false) Date startDate,
-                                       @RequestParam(required = false) Date endDate,
-                                       @RequestParam(required = false) String title,
-                                       ModelMap modelMap) {
-
-        modelMap.addAttribute("questions", questionService.queryQuestionByTitleRegexp(".*"));
-        return "questions";
     }
 
     @PostMapping("/questions/ask")
@@ -118,7 +64,6 @@ public class QuestionController {
         map.put("question", question);
         return map;
     }
-
 
 
     @PostMapping("/questions/{questionId}/comment")
@@ -158,7 +103,13 @@ public class QuestionController {
             map.put("message", "需要验证身份");
             return map;
         }
-        questionService.addQuestionApproval(user, questionId, 0);
+        try {
+            questionService.addQuestionApproval(user, questionId, 0);
+        } catch (Exception e) {
+            map.put("success", false);
+            map.put("message", "操作失败");
+            return map;
+        }
         map.put("success", true);
         return map;
     }
@@ -174,7 +125,13 @@ public class QuestionController {
             map.put("message", "需要验证身份");
             return map;
         }
-        questionService.addQuestionApproval(user, questionId, 1);
+        try {
+            questionService.addQuestionApproval(user, questionId, 1);
+        } catch (Exception e) {
+            map.put("success", false);
+            map.put("message", "操作失败");
+            return map;
+        }
         map.put("success", true);
         return map;
     }

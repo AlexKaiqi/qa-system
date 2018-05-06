@@ -2,7 +2,9 @@ package com.alex.qasystem.service.impl;
 
 import com.alex.qasystem.dao.QuestionMapper;
 import com.alex.qasystem.dao.QuestionSubscriptionMapper;
-import com.alex.qasystem.entity.*;
+import com.alex.qasystem.entity.Question;
+import com.alex.qasystem.entity.QuestionSubscription;
+import com.alex.qasystem.entity.User;
 import com.alex.qasystem.service.QuestionSubscriptionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -30,12 +32,11 @@ public class QuestionSubscriptionServiceImpl implements QuestionSubscriptionServ
     public List<Question> getSubscribedQuestionsByUserId(Integer userId) {
         List<QuestionSubscription> subscriptions = questionSubscriptionMapper.selectByUserId(userId);
         List<Question> questions = new ArrayList<>();
-        for (QuestionSubscription subscription: subscriptions) {
+        for (QuestionSubscription subscription : subscriptions) {
             questions.add(questionMapper.selectById(subscription.getQuestionId()));
         }
         return questions;
     }
-
 
 
     @Override
@@ -50,10 +51,10 @@ public class QuestionSubscriptionServiceImpl implements QuestionSubscriptionServ
     @Override
     public QuestionSubscription deleteQuestionSubscriptionById(User user, Integer questionSubscriptionId) {
         QuestionSubscription subscription = questionSubscriptionMapper.selectById(questionSubscriptionId);
-        if(subscription == null) {
+        if (subscription == null) {
             throw new RuntimeException("找不到该问题关注. questionSubscriptionId: " + questionSubscriptionId);
         }
-        if(!subscription.getUserId().equals(user.getId())) {
+        if (!subscription.getUserId().equals(user.getId())) {
             throw new RuntimeException("没有删除权限. userId: " + user.getId());
         }
         questionSubscriptionMapper.deleteById(questionSubscriptionId);

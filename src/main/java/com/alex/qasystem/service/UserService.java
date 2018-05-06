@@ -2,7 +2,7 @@ package com.alex.qasystem.service;
 
 import com.alex.qasystem.dto.UserAuthExecution;
 import com.alex.qasystem.dto.UserRegistrationExecution;
-import com.alex.qasystem.entity.*;
+import com.alex.qasystem.entity.User;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.commons.CommonsMultipartFile;
 

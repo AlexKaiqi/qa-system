@@ -1,7 +1,6 @@
 package com.alex.qasystem.dao;
 
 import com.alex.qasystem.entity.QuestionApproval;
-import com.alex.qasystem.entity.QuestionComment;
 import org.apache.ibatis.annotations.*;
 import org.springframework.stereotype.Component;
 

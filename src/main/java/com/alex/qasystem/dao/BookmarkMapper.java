@@ -1,7 +1,6 @@
 package com.alex.qasystem.dao;
 
 import com.alex.qasystem.entity.Bookmark;
-import com.alex.qasystem.entity.MedalRecord;
 import org.apache.ibatis.annotations.*;
 import org.springframework.stereotype.Component;
 
@@ -10,7 +9,7 @@ import java.util.List;
 @Component
 @Mapper
 public interface BookmarkMapper {
-    
+
     @Insert("INSERT INTO bookmark (user_id, question_id) VALUES" +
             "(#{userId}, #{questionId}) ")
     @Options(useGeneratedKeys = true, keyColumn = "id")

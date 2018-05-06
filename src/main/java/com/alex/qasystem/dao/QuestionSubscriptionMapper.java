@@ -1,12 +1,9 @@
 package com.alex.qasystem.dao;
 
-import com.alex.qasystem.entity.MedalRecord;
-import com.alex.qasystem.entity.Message;
 import com.alex.qasystem.entity.QuestionSubscription;
 import org.apache.ibatis.annotations.*;
 import org.springframework.stereotype.Component;
 
-import java.util.Date;
 import java.util.List;
 
 @Component
@@ -16,7 +13,7 @@ public interface QuestionSubscriptionMapper {
     @Insert("INSERT INTO question_subscription (user_id, question_id) VALUES" +
             "(#{userId}, #{questionId})")
     @Options(useGeneratedKeys = true, keyColumn = "id")
-    Integer insert(QuestionSubscription  questionSubscription);
+    Integer insert(QuestionSubscription questionSubscription);
 
     @Delete("DELETE FROM question_subscription WHERE id = #{id} ")
     Integer deleteById(@Param("id") Integer id);

@@ -1,8 +1,6 @@
 package com.alex.qasystem.dao;
 
 import com.alex.qasystem.entity.Question;
-import com.alex.qasystem.entity.QuestionComment;
-import com.alex.qasystem.entity.Tag;
 import com.alex.qasystem.entity.User;
 import org.apache.ibatis.annotations.*;
 import org.springframework.stereotype.Component;
@@ -52,7 +50,7 @@ public interface QuestionMapper {
     Integer updateById(Question question);
 
     @Select("SELECT * FROM question WHERE id = #{id}")
-    @Results( id = "questionResult", value = {
+    @Results(id = "questionResult", value = {
             @Result(property = "id", column = "id", javaType = Integer.class),
             @Result(property = "userId", column = "user_id", javaType = Integer.class),
             @Result(property = "title", column = "title", javaType = String.class),
@@ -76,9 +74,9 @@ public interface QuestionMapper {
 
     @Select(
             "SELECT * FROM question WHERE id IN" +
-            "   (SELECT question_id FROM question_tag WHERE question_tag.tag_id IN " +
-            "       (SELECT tag.id FROM tag where tag.title REGEXP #{tagRegexp})" +
-            "   )"
+                    "   (SELECT question_id FROM question_tag WHERE question_tag.tag_id IN " +
+                    "       (SELECT tag.id FROM tag where tag.title REGEXP #{tagRegexp})" +
+                    "   )"
     )
     @ResultMap("questionResult")
     List<Question> selectByTagRegexp(@Param("tagRegexp") String tagRegexp);

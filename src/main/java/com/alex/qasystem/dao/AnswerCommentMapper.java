@@ -1,7 +1,6 @@
 package com.alex.qasystem.dao;
 
 import com.alex.qasystem.entity.AnswerComment;
-import com.alex.qasystem.entity.QuestionComment;
 import com.alex.qasystem.entity.User;
 import org.apache.ibatis.annotations.*;
 import org.springframework.stereotype.Component;
@@ -51,7 +50,6 @@ public interface AnswerCommentMapper {
 
     })
     AnswerComment selectById(@Param("id") Integer id);
-
 
     @Select("SELECT * FROM answer_comment WHERE answer_id = #{answerId} ")
     @ResultMap("answerCommentResult")

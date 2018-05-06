@@ -11,9 +11,12 @@ public class Tag {
     private String description;
     private String iconSrc;
 
-    public Tag(){}
+    public Tag() {
+    }
 
-    public Tag(String title) {this.title = title;}
+    public Tag(String title) {
+        this.title = title;
+    }
 
     public Integer getId() {
         return id;

@@ -2,7 +2,6 @@ package com.alex.qasystem.dao;
 
 import com.alex.qasystem.entity.Medal;
 import com.alex.qasystem.entity.MedalRecord;
-import com.alex.qasystem.entity.Tag;
 import org.apache.ibatis.annotations.*;
 import org.springframework.stereotype.Component;
 

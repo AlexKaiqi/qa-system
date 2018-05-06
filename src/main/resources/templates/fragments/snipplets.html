@@ -49,7 +49,7 @@
             </form>
             <ul class="navbar-nav">
                 <li class="navbar-item">
-                    <a class="nav-link nav-profile-name" href="/user/account" hidden></a>
+                    <a class="nav-link nav-profile-name" href="#" hidden></a>
                     <a class="nav-link nav-sign-in" href="/user/sign-in">sign-in</a>
                 </li>
                 <li class="navbar-item">
@@ -80,7 +80,7 @@
         var formData = {token: token};
         var data;
         $.ajax({
-            type: 'POST', // define the type of HTTP verb we want to use (POST for our form)
+            type: 'GET', // define the type of HTTP verb we want to use (POST for our form)
             url: '/token/check', // the url where we want to POST
             data: formData, // our data object
             dataType: 'json', // what type of data do we expect back from the server
@@ -106,8 +106,8 @@
         $navProfileName.attr('hidden', false);
         $('.nav-sign-in').attr('hidden', true);
         $navProfileName.text(localStorage.getItem('PROFILE_NAME'));
+        $navProfileName.attr('href', '/user/account?token=' + localStorage.getItem('token'));
     }
-
 
     /**
      * 登出

@@ -2,7 +2,8 @@ package com.alex.qasystem.service.impl;
 
 import com.alex.qasystem.dao.UserMapper;
 import com.alex.qasystem.dao.UserSubscriptionMapper;
-import com.alex.qasystem.entity.*;
+import com.alex.qasystem.entity.User;
+import com.alex.qasystem.entity.UserSubscription;
 import com.alex.qasystem.service.UserSubscriptionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -24,6 +25,7 @@ public class UserSubscriptionServiceImpl implements UserSubscriptionService {
     public void setUserMapper(UserMapper userMapper) {
         this.userMapper = userMapper;
     }
+
     @Override
     public List<User> getUserSubscriptions(Integer userId) {
         return null;

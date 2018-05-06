@@ -30,13 +30,16 @@ import java.util.Map;
 @Service
 public class UserServiceImpl implements UserService {
 
+    /**
+     * token 有效时间 两个小时
+     */
+    private final static long TOKEN_DURATION = 7200000;
     private UserMapper userMapper;
     private AuthTokenMapper authTokenMapper;
     private QuestionCommentMapper questionCommentMapper;
     private QuestionMapper questionMapper;
     private AnswerMapper answerMapper;
     private AnswerCommentMapper answerCommentMapper;
-
     private Logger log = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
@@ -58,11 +61,6 @@ public class UserServiceImpl implements UserService {
     public void setAnswerCommentMapper(AnswerCommentMapper answerCommentMapper) {
         this.answerCommentMapper = answerCommentMapper;
     }
-
-    /**
-     * token 有效时间 两个小时
-     */
-    private final static long TOKEN_DURATION = 7200000;
 
     @Autowired
     public void setUserMapper(UserMapper userMapper) {
@@ -205,7 +203,7 @@ public class UserServiceImpl implements UserService {
         //TODO
         String imageBasePath = "src/resources/static/images/";
         String fileName = user.getId() + profileImg.getContentType();
-        String profileImgSrc = "images/avatars/"+fileName;
+        String profileImgSrc = "images/avatars/" + fileName;
         return null;
     }
 
@@ -215,7 +213,7 @@ public class UserServiceImpl implements UserService {
         if (!SecurityUtil.checkpw(oldPassword, user.getPassword())) {
             map.put("success", false);
             map.put("message", "密码不正确");
-        } else if(!ValidationUtil.isValidPassword(newPassword)) {
+        } else if (!ValidationUtil.isValidPassword(newPassword)) {
             map.put("success", false);
             map.put("message", "新密码不合法");
         } else {

@@ -28,7 +28,7 @@ public interface UserMapper {
      * 根据 ID 删除用户
      *
      * @param id 用户 ID
-     * @return  删除的用户数量, 正确返回结果应该是 1.
+     * @return 删除的用户数量, 正确返回结果应该是 1.
      */
     @Delete("DELETE FROM user WHERE id= #{id}")
     Integer deleteById(Integer id);
@@ -70,7 +70,7 @@ public interface UserMapper {
     /**
      * 根据邮箱和密码查询用户
      *
-     * @param email    邮箱
+     * @param email 邮箱
      * @return 符合条件的 User
      */
     @Select("SELECT * FROM user WHERE email = #{email}")

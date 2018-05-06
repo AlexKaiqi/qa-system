@@ -27,11 +27,12 @@ public class BookmarkServiceImpl implements BookmarkService {
     public void setQuestionMapper(QuestionMapper questionMapper) {
         this.questionMapper = questionMapper;
     }
+
     @Override
     public List<Question> selectBookmarkedQuestionByUserId(Integer userId) {
         List<Bookmark> bookmarks = bookmarkMapper.selectByUserId(userId);
         List<Question> questions = new ArrayList<>();
-        for (Bookmark bookmark: bookmarks) {
+        for (Bookmark bookmark : bookmarks) {
             questions.add(questionMapper.selectById(bookmark.getQuestionId()));
         }
         return questions;
@@ -41,7 +42,7 @@ public class BookmarkServiceImpl implements BookmarkService {
     public Bookmark addBookmark(Integer userId, Integer questionId) {
         // 检查是否已经收藏, 如果有直接返回.
         List<Bookmark> bookmarks = bookmarkMapper.selectByUserId(userId);
-        for (Bookmark bookmark: bookmarks) {
+        for (Bookmark bookmark : bookmarks) {
             if (bookmark.getQuestionId().equals(questionId)) {
                 return bookmark;
             }
@@ -56,7 +57,7 @@ public class BookmarkServiceImpl implements BookmarkService {
     @Override
     public Bookmark deleteBookmarkById(User user, Integer bookmarkId) {
         Bookmark bookmark = bookmarkMapper.selectById(bookmarkId);
-        if(bookmark == null) {
+        if (bookmark == null) {
             throw new RuntimeException("找不到该问题搜藏. bookmarkId: " + bookmarkId);
         }
         if (!bookmark.getUserId().equals(user.getId())) {

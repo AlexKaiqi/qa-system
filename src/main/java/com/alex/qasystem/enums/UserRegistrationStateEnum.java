@@ -1,6 +1,6 @@
 package com.alex.qasystem.enums;
 
-public enum  UserRegistrationStateEnum {
+public enum UserRegistrationStateEnum {
 
     /**
      *
@@ -17,14 +17,6 @@ public enum  UserRegistrationStateEnum {
         this.stateInfo = stateInfo;
     }
 
-    public int getState() {
-        return state;
-    }
-
-    public String getStateInfo() {
-        return stateInfo;
-    }
-
     public static UserRegistrationStateEnum stateOf(int index) {
         for (UserRegistrationStateEnum state : values()) {
             if (state.getState() == index) {
@@ -32,5 +24,13 @@ public enum  UserRegistrationStateEnum {
             }
         }
         return null;
+    }
+
+    public int getState() {
+        return state;
+    }
+
+    public String getStateInfo() {
+        return stateInfo;
     }
 }

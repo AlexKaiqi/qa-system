@@ -25,6 +25,7 @@ public class AnswerController {
     public void setUserService(UserService userService) {
         this.userService = userService;
     }
+
     @Autowired
     public void setAnswerService(AnswerService answerService) {
         this.answerService = answerService;
@@ -56,9 +57,10 @@ public class AnswerController {
         return map;
     }
 
-    @PostMapping("/answers/{answerId}/comment")
+    @PostMapping("/questions/{questionId}/answers/{answerId}/comment")
     @ResponseBody
-    public Map<String, Object> addAnswerComment(@PathVariable Integer answerId,
+    public Map<String, Object> addAnswerComment(@PathVariable Integer questionId,
+                                                @PathVariable Integer answerId,
                                                 @RequestParam String content,
                                                 @RequestParam String token) {
         Map<String, Object> map = new HashMap<>(2);
@@ -82,9 +84,10 @@ public class AnswerController {
         return map;
     }
 
-    @PostMapping("/answers/{answerId}/approval")
+    @PostMapping("/questions/{questionId}/answers/{answerId}/approval")
     @ResponseBody
-    public Map<String, Object> addAnswerApproval(@PathVariable Integer answerId,
+    public Map<String, Object> addAnswerApproval(@PathVariable Integer questionId,
+                                                 @PathVariable Integer answerId,
                                                  @RequestParam String token) {
         Map<String, Object> map = new HashMap<>(2);
         User user = userService.getUserIdByToken(token);
@@ -93,14 +96,22 @@ public class AnswerController {
             map.put("message", "需要验证身份");
             return map;
         }
-        answerService.addAnswerApproval(user, answerId, 0);
+        try {
+            answerService.addAnswerApproval(user, answerId, 0);
+        } catch (Exception e) {
+            e.printStackTrace();
+            map.put("success", false);
+            map.put("message", "操作失败");
+            return map;
+        }
         map.put("success", true);
         return map;
     }
 
-    @PostMapping("answers/{answerId}/disapproval")
+    @PostMapping("/questions/{questionId}/answers/{answerId}/disapproval")
     @ResponseBody
-    public Map<String, Object> addAnswerDisapproval(@PathVariable Integer answerId,
+    public Map<String, Object> addAnswerDisapproval(@PathVariable Integer questionId,
+                                                    @PathVariable Integer answerId,
                                                     @RequestParam String token) {
         Map<String, Object> map = new HashMap<>(2);
         User user = userService.getUserIdByToken(token);
@@ -109,10 +120,18 @@ public class AnswerController {
             map.put("message", "authentication token required");
             return map;
         }
-        answerService.addAnswerApproval(user, answerId, 1);
+        try {
+            answerService.addAnswerApproval(user, answerId, 1);
+        } catch (Exception e) {
+            e.printStackTrace();
+            map.put("success", false);
+            map.put("message", "操作失败");
+            return map;
+        }
         map.put("success", true);
         return map;
     }
+
 
 
 }

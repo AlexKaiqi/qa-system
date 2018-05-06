@@ -1,12 +1,11 @@
 package com.alex.qasystem.service;
 
-import com.alex.qasystem.dao.QuestionMapper;
-import com.alex.qasystem.dao.TagMapper;
-import com.alex.qasystem.entity.*;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.alex.qasystem.entity.Question;
+import com.alex.qasystem.entity.QuestionApproval;
+import com.alex.qasystem.entity.QuestionComment;
+import com.alex.qasystem.entity.User;
 import org.springframework.stereotype.Service;
 
-import java.util.Date;
 import java.util.List;
 
 @Service

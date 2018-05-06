@@ -17,7 +17,7 @@ public enum UserAuthStateEnum {
     WRONG_PASSWORD(-1, "帐号密码不匹配"),
     USER_NOT_EXISTS(-1001, "该邮箱尚未注册"),
     TOKEN_NOT_EXISTS_OR_EXPIRED(-1002, "token不存在或已经过期"),
-    NULL_AUTH_INFO(-1003,"缺少身份验证信息"),
+    NULL_AUTH_INFO(-1003, "缺少身份验证信息"),
     INVALID_LOGIN_PARAMETERS(-1003, "登录信息不合法");
 
     private int state;
@@ -29,14 +29,6 @@ public enum UserAuthStateEnum {
         this.stateInfo = stateInfo;
     }
 
-    public int getState() {
-        return state;
-    }
-
-    public String getStateInfo() {
-        return stateInfo;
-    }
-
     public static UserAuthStateEnum stateOf(int index) {
         for (UserAuthStateEnum state : values()) {
             if (state.getState() == index) {
@@ -44,6 +36,14 @@ public enum UserAuthStateEnum {
             }
         }
         return null;
+    }
+
+    public int getState() {
+        return state;
+    }
+
+    public String getStateInfo() {
+        return stateInfo;
     }
 
 }

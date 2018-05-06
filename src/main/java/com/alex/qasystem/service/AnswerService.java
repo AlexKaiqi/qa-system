@@ -19,6 +19,4 @@ public interface AnswerService {
 
     AnswerApproval addAnswerApproval(User user, Integer answerId, Integer type);
 
-
-
 }

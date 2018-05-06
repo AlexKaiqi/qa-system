@@ -1,6 +1,7 @@
 package com.alex.qasystem.service;
 
-import com.alex.qasystem.entity.*;
+import com.alex.qasystem.entity.User;
+import com.alex.qasystem.entity.UserSubscription;
 
 import java.util.List;
 

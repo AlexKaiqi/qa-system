@@ -17,7 +17,6 @@ public class QuestionComment {
     private User user;
 
 
-
     public Integer getId() {
         return id;
     }
@@ -65,6 +64,7 @@ public class QuestionComment {
     public void setLastEditTime(Date lastEditTime) {
         this.lastEditTime = lastEditTime;
     }
+
     public User getUser() {
         return user;
     }
@@ -72,6 +72,7 @@ public class QuestionComment {
     public void setUser(User user) {
         this.user = user;
     }
+
     @Override
     public String toString() {
         try {

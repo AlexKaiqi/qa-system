@@ -1,6 +1,5 @@
 package com.alex.qasystem.dao;
 
-import com.alex.qasystem.entity.MedalRecord;
 import com.alex.qasystem.entity.Message;
 import org.apache.ibatis.annotations.*;
 import org.springframework.stereotype.Component;
