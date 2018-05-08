@@ -3,7 +3,9 @@ package com.alex.qasystem.service;
 import com.alex.qasystem.entity.Bookmark;
 import com.alex.qasystem.entity.Question;
 import com.alex.qasystem.entity.User;
+import org.apache.ibatis.javassist.NotFoundException;
 
+import javax.security.auth.message.AuthException;
 import java.util.List;
 
 public interface BookmarkService {
@@ -12,6 +14,6 @@ public interface BookmarkService {
 
     Bookmark addBookmark(Integer userId, Integer questionId);
 
-    Bookmark deleteBookmarkById(User user, Integer bookmarkId);
+    Bookmark deleteBookmarkById(User user, Integer bookmarkId) throws NotFoundException, AuthException;
 
 }

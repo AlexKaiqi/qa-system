@@ -5,17 +5,15 @@ import com.alex.qasystem.entity.AnswerComment;
 import com.alex.qasystem.entity.User;
 import com.alex.qasystem.service.AnswerService;
 import com.alex.qasystem.service.UserService;
+import org.apache.ibatis.javassist.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
+import javax.security.auth.message.AuthException;
 import java.util.HashMap;
 import java.util.Map;
 
-@Controller
+@RestController
 public class AnswerController {
 
     private UserService userService;
@@ -32,7 +30,6 @@ public class AnswerController {
     }
 
     @PostMapping("/questions/{questionId}/answer")
-    @ResponseBody
     public Map<String, Object> addAnswer(@PathVariable Integer questionId,
                                          @RequestParam String content,
                                          @RequestParam String token) {
@@ -58,7 +55,6 @@ public class AnswerController {
     }
 
     @PostMapping("/questions/{questionId}/answers/{answerId}/comment")
-    @ResponseBody
     public Map<String, Object> addAnswerComment(@PathVariable Integer questionId,
                                                 @PathVariable Integer answerId,
                                                 @RequestParam String content,
@@ -85,7 +81,6 @@ public class AnswerController {
     }
 
     @PostMapping("/questions/{questionId}/answers/{answerId}/approval")
-    @ResponseBody
     public Map<String, Object> addAnswerApproval(@PathVariable Integer questionId,
                                                  @PathVariable Integer answerId,
                                                  @RequestParam String token) {
@@ -109,7 +104,6 @@ public class AnswerController {
     }
 
     @PostMapping("/questions/{questionId}/answers/{answerId}/disapproval")
-    @ResponseBody
     public Map<String, Object> addAnswerDisapproval(@PathVariable Integer questionId,
                                                     @PathVariable Integer answerId,
                                                     @RequestParam String token) {
@@ -132,6 +126,84 @@ public class AnswerController {
         return map;
     }
 
+    @PutMapping("/questions/{questionId}/answers/{answerId}")
+    public Map<String, Object> modifyAnswer(@PathVariable Integer questionId,
+                                            @PathVariable Integer answerId,
+                                            @RequestParam String content,
+                                            @RequestParam String token) {
+        Map<String, Object> map = new HashMap<>(2);
+        User user = userService.getUserIdByToken(token);
+        if (user == null) {
+            map.put("success", false);
+            map.put("message", "需要验证身份");
+            return map;
+        }
+        try {
+            answerService.updateAnswerContent(user, answerId, content);
+        } catch (NotFoundException | AuthException e) {
+            map.put("success", false);
+            map.put("message", e.getMessage());
+            return map;
+        } catch (Exception e) {
+            map.put("success", false);
+            map.put("message", "操作失败");
+            return map;
+        }
+        map.put("success", true);
+        return map;
 
+    }
 
+    @DeleteMapping("/questions/{questionId}/answers/{answerId}")
+    public Map<String, Object> deleteAnswer(@PathVariable Integer questionId,
+                                            @PathVariable Integer answerId,
+                                            @RequestParam String token) {
+        Map<String, Object> map = new HashMap<>(2);
+        User user = userService.getUserIdByToken(token);
+        if (user == null) {
+            map.put("success", false);
+            map.put("message", "需要验证身份");
+            return map;
+        }
+        try {
+            answerService.deleteAnswer(user, answerId);
+        } catch (NotFoundException | AuthException e) {
+            map.put("success", false);
+            map.put("message", e.getMessage());
+            return map;
+        } catch (Exception e) {
+            map.put("success", false);
+            map.put("message", "操作失败");
+            return map;
+        }
+        map.put("success", true);
+        return map;
+    }
+
+    @DeleteMapping("/questions/{questionId}/answers/{answerId}/comments/{commentId}")
+    public Map<String, Object> deleteAnswerComment(@PathVariable Integer questionId,
+                                                   @PathVariable Integer answerId,
+                                                   @PathVariable Integer commentId,
+                                                   @RequestParam String token) {
+        Map<String, Object> map = new HashMap<>(2);
+        User user = userService.getUserIdByToken(token);
+        if (user == null) {
+            map.put("success", false);
+            map.put("message", "需要验证身份");
+            return map;
+        }
+        try {
+            answerService.deleteAnswerComment(user, commentId);
+        } catch (NotFoundException | AuthException e) {
+            map.put("success", false);
+            map.put("message", e.getMessage());
+            return map;
+        } catch (Exception e) {
+            map.put("success", false);
+            map.put("message", "操作失败");
+            return map;
+        }
+        map.put("success", true);
+        return map;
+    }
 }

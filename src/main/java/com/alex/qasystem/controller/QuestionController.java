@@ -8,15 +8,17 @@ import com.alex.qasystem.entity.Tag;
 import com.alex.qasystem.entity.User;
 import com.alex.qasystem.service.QuestionService;
 import com.alex.qasystem.service.UserService;
+import org.apache.ibatis.javassist.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
 
+import javax.security.auth.message.AuthException;
 import java.util.*;
 import java.util.regex.Pattern;
 
-@Controller
+@RestController
 public class QuestionController {
 
     private QuestionService questionService;
@@ -38,8 +40,21 @@ public class QuestionController {
         this.tagMapper = tagMapper;
     }
 
-    @PostMapping("/questions/ask")
-    @ResponseBody
+    @GetMapping("/questions/{questionId}")
+    public Map<String, Object> getQuestion(@PathVariable Integer questionId) {
+        Map<String, Object> map = new HashMap<>(2);
+        Question question = questionService.getQuestionById(questionId);
+        if (question == null) {
+            map.put("success", false);
+            map.put("message", "找不到该问题");
+            return map;
+        }
+        map.put("success", true);
+        map.put("question", question);
+        return map;
+    }
+
+    @PostMapping("/questions")
     public Map<String, Object> addQuestion(@RequestParam String title,
                                            @RequestParam String description,
                                            @RequestParam("tags[]") List<String> tags,
@@ -65,9 +80,7 @@ public class QuestionController {
         return map;
     }
 
-
     @PostMapping("/questions/{questionId}/comment")
-    @ResponseBody
     public Map<String, Object> addQuestionComment(@PathVariable Integer questionId,
                                                   @RequestParam String content,
                                                   @RequestParam String token) {
@@ -93,7 +106,6 @@ public class QuestionController {
     }
 
     @PostMapping("/questions/{questionId}/approval")
-    @ResponseBody
     public Map<String, Object> addQuestionApproval(@PathVariable Integer questionId,
                                                    @RequestParam String token) {
         Map<String, Object> map = new HashMap<>(2);
@@ -115,7 +127,6 @@ public class QuestionController {
     }
 
     @PostMapping("/questions/{questionId}/disapproval")
-    @ResponseBody
     public Map<String, Object> addQuestionDisapproval(@PathVariable Integer questionId,
                                                       @RequestParam String token) {
         Map<String, Object> map = new HashMap<>(2);
@@ -135,4 +146,60 @@ public class QuestionController {
         map.put("success", true);
         return map;
     }
+
+    @DeleteMapping("/questions/{questionId}/comments/{commentId}")
+    public Map<String, Object> deleteQuestionComment(@PathVariable Integer questionId,
+                                             @PathVariable Integer commentId,
+                                             @RequestParam String token) {
+        Map<String, Object> map = new HashMap<>(2);
+        User user = userService.getUserIdByToken(token);
+        if (user == null) {
+            map.put("success", false);
+            map.put("message", "需要验证身份");
+            return map;
+        }
+        try {
+            questionService.deleteQuestionComment(user, commentId);
+        } catch (NotFoundException | AuthException e) {
+            map.put("success", false);
+            map.put("message", e.getMessage());
+            return map;
+        } catch(Exception e) {
+            map.put("success", false);
+            map.put("message", "操作失败");
+            return map;
+        }
+        map.put("success", true);
+        return map;
+    }
+
+    @PutMapping("/questions/{questionId}")
+    public Map<String, Object> modifyQuestion(@PathVariable Integer questionId,
+                                              @RequestParam(required = false) String title,
+                                              @RequestParam(value = "tags[]", required = false) List<String> tags,
+                                              @RequestParam(required = false) String description,
+                                              @RequestParam String token) {
+        Map<String, Object> map = new HashMap<>(2);
+        User user = userService.getUserIdByToken(token);
+        if (user == null) {
+            map.put("success", false);
+            map.put("message", "需要验证身份");
+            return map;
+        }
+        try {
+            questionService.updateQuestionContent(user, questionId, title, description, tags);
+        } catch (NotFoundException | AuthException e) {
+            map.put("success", false);
+            map.put("message", e.getMessage());
+            return map;
+        } catch(Exception e) {
+            map.put("success", false);
+            map.put("message", "操作失败");
+            return map;
+        }
+        map.put("success", true);
+        return map;
+
+    }
+
 }

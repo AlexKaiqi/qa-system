@@ -6,9 +6,11 @@ import com.alex.qasystem.entity.Bookmark;
 import com.alex.qasystem.entity.Question;
 import com.alex.qasystem.entity.User;
 import com.alex.qasystem.service.BookmarkService;
+import org.apache.ibatis.javassist.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.security.auth.message.AuthException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -55,13 +57,13 @@ public class BookmarkServiceImpl implements BookmarkService {
     }
 
     @Override
-    public Bookmark deleteBookmarkById(User user, Integer bookmarkId) {
+    public Bookmark deleteBookmarkById(User user, Integer bookmarkId) throws NotFoundException, AuthException {
         Bookmark bookmark = bookmarkMapper.selectById(bookmarkId);
         if (bookmark == null) {
-            throw new RuntimeException("找不到该问题搜藏. bookmarkId: " + bookmarkId);
+            throw new NotFoundException("找不到该问题搜藏. bookmarkId: " + bookmarkId);
         }
         if (!bookmark.getUserId().equals(user.getId())) {
-            throw new RuntimeException("没有删除收藏的权限. userId: " + user.getId());
+            throw new AuthException("没有删除收藏的权限. userId: " + user.getId());
         }
         bookmarkMapper.deleteById(bookmarkId);
         return bookmark;

@@ -8,10 +8,12 @@ import com.alex.qasystem.entity.AnswerApproval;
 import com.alex.qasystem.entity.AnswerComment;
 import com.alex.qasystem.entity.User;
 import com.alex.qasystem.service.AnswerService;
+import org.apache.ibatis.javassist.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.security.auth.message.AuthException;
 import java.util.Date;
 
 @Service
@@ -78,46 +80,47 @@ public class AnswerServiceImpl implements AnswerService {
     }
 
     @Override
-    public Answer updateAnswerContent(User user, Integer answerId, String content) {
+    public Answer updateAnswerContent(User user, Integer answerId, String content) throws NotFoundException, AuthException {
         Integer userId = user.getId();
         Integer groupId = user.getGroupId();
         Answer answer = answerMapper.selectById(answerId);
         if (answer == null) {
-            throw new RuntimeException("回答不存在, answerId: " + answerId);
+            throw new NotFoundException("回答不存在, answerId: " + answerId);
         }
         if (!answer.getUserId().equals(userId) && 1 != groupId) {
-            throw new RuntimeException("没有修改回答的权限, userId: " + userId);
+            throw new AuthException("没有修改回答的权限, userId: " + userId);
         }
+        answer.setId(answerId);
         answer.setContent(content);
         answerMapper.updateById(answer);
         return answer;
     }
 
     @Override
-    public Answer deleteAnswer(User user, Integer answerId) {
+    public Answer deleteAnswer(User user, Integer answerId) throws NotFoundException, AuthException {
         Integer userId = user.getId();
         Integer groupId = user.getGroupId();
         Answer answer = answerMapper.selectById(answerId);
         if (answer == null) {
-            throw new RuntimeException("回答不存在, answerId: " + answerId);
+            throw new NotFoundException("回答不存在, answerId: " + answerId);
         }
         if (!answer.getUserId().equals(userId) && 1 != groupId) {
-            throw new RuntimeException("没有修改回答的权限, userId: " + userId);
+            throw new AuthException("没有修改回答的权限, userId: " + userId);
         }
         answerMapper.deleteById(answerId);
         return answer;
     }
 
     @Override
-    public AnswerComment deleteAnswerComment(User user, Integer answerId, Integer answerCommentId) {
+    public AnswerComment deleteAnswerComment(User user, Integer answerCommentId) throws NotFoundException, AuthException {
         Integer userId = user.getId();
         Integer groupId = user.getGroupId();
         AnswerComment answerComment = answerCommentMapper.selectById(answerCommentId);
         if (answerComment == null) {
-            throw new RuntimeException("评论不存在, answerCommentId: " + answerCommentId);
+            throw new NotFoundException("评论不存在, answerCommentId: " + answerCommentId);
         }
         if (!answerComment.getUserId().equals(userId) && 1 != groupId) {
-            throw new RuntimeException("没有删除评论的权限, userId: " + userId);
+            throw new AuthException("没有删除评论的权限, userId: " + userId);
         }
         answerCommentMapper.deleteById(answerCommentId);
         return answerComment;

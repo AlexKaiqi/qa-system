@@ -3,9 +3,11 @@ package com.alex.qasystem.service.impl;
 import com.alex.qasystem.dao.*;
 import com.alex.qasystem.entity.*;
 import com.alex.qasystem.service.MessageService;
+import org.apache.ibatis.javassist.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.security.auth.message.AuthException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -95,13 +97,13 @@ public class MessageServiceImpl implements MessageService {
     }
 
     @Override
-    public Message deleteMessageById(User user, Integer messageId) {
+    public Message deleteMessageById(User user, Integer messageId) throws NotFoundException, AuthException {
         Message message = messageMapper.selectById(messageId);
         if (message == null) {
-            throw new RuntimeException("找不到该消息. message: " + messageId);
+            throw new NotFoundException("找不到该消息. message: " + messageId);
         }
         if (!message.getReceiverId().equals(user.getId())) {
-            throw new RuntimeException("没有删除消息的权限. userId: " + user.getId());
+            throw new AuthException("没有删除消息的权限. userId: " + user.getId());
         }
         return message;
     }

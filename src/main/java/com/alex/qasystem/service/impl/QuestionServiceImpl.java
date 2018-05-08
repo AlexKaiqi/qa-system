@@ -3,6 +3,7 @@ package com.alex.qasystem.service.impl;
 import com.alex.qasystem.dao.*;
 import com.alex.qasystem.entity.*;
 import com.alex.qasystem.service.QuestionService;
+import org.apache.ibatis.javassist.NotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +11,7 @@ import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.security.auth.message.AuthException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -126,17 +128,18 @@ public class QuestionServiceImpl implements QuestionService {
 
 
     @Override
-    public Question updateQuestionContent(User user, Integer questionId, String title, String description, List<String> tags) {
+    public Question updateQuestionContent(User user, Integer questionId, String title, String description, List<String> tags) throws NotFoundException, AuthException {
 
         Integer userId = user.getId();
         Integer groupId = user.getGroupId();
         Question question = questionMapper.selectById(questionId);
         if (question == null) {
-            throw new RuntimeException("问题不存在, questionId: " + questionId);
+            throw new NotFoundException("问题不存在, questionId: " + questionId);
         }
         if (!question.getUserId().equals(userId) && 1 != groupId) {
-            throw new RuntimeException("没有修改问题的权限, userId: " + userId);
+            throw new AuthException("没有修改问题的权限, userId: " + userId);
         }
+        question.setId(questionId);
         question.setTitle(title);
         question.setDescription(description);
         questionMapper.updateById(question);
@@ -167,15 +170,15 @@ public class QuestionServiceImpl implements QuestionService {
 
 
     @Override
-    public Question closeQuestion(User user, Integer questionId) {
+    public Question closeQuestion(User user, Integer questionId) throws NotFoundException, AuthException {
         Integer userId = user.getId();
         Integer groupId = user.getGroupId();
         Question question = questionMapper.selectById(questionId);
         if (question == null) {
-            throw new RuntimeException("问题不存在, questionId: " + questionId);
+            throw new NotFoundException("问题不存在, questionId: " + questionId);
         }
         if (!question.getUserId().equals(userId) && 1 != groupId) {
-            throw new RuntimeException("没有修改问题的权限, userId: " + userId);
+            throw new AuthException("没有修改问题的权限, userId: " + userId);
         }
         question.setStatus(1);
         questionMapper.updateById(question);
@@ -183,15 +186,15 @@ public class QuestionServiceImpl implements QuestionService {
     }
 
     @Override
-    public QuestionComment deleteQuestionComment(User user, Integer questionCommentId) {
+    public QuestionComment deleteQuestionComment(User user, Integer questionCommentId) throws NotFoundException, AuthException {
         Integer userId = user.getId();
         Integer groupId = user.getGroupId();
         QuestionComment questionComment = questionCommentMapper.selectById(questionCommentId);
         if (questionComment == null) {
-            throw new RuntimeException("评论不存在, questionCommentId: " + questionCommentId);
+            throw new NotFoundException("评论不存在, questionCommentId: " + questionCommentId);
         }
         if (!questionComment.getUserId().equals(userId) && 1 != groupId) {
-            throw new RuntimeException("没有删除评论的权限, userId: " + userId);
+            throw new AuthException("没有删除评论的权限, userId: " + userId);
         }
         questionCommentMapper.deleteById(questionCommentId);
         return questionComment;

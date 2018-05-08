@@ -62,6 +62,12 @@ public class ViewController {
                               ModelMap modelMap) {
         Question question = questionService.getQuestionById(questionId);
         modelMap.addAttribute("question", question);
+        String tagString = "";
+        for (Tag tag: question.getTags()) {
+            tagString += tag.getTitle()+"+";
+        }
+        tagString = tagString.substring(0, tagString.length() - 1);
+        modelMap.addAttribute("tagString", tagString);
         return "question";
     }
 
@@ -83,7 +89,7 @@ public class ViewController {
         return "tags";
     }
 
-    @GetMapping("/questions")
+    @GetMapping("/questions/all")
     public String getFilteredQuestions(@RequestParam(required = false) List<String> tags,
                                        @RequestParam(required = false) Date startDate,
                                        @RequestParam(required = false) Date endDate,

@@ -6,9 +6,11 @@ import com.alex.qasystem.entity.Question;
 import com.alex.qasystem.entity.QuestionSubscription;
 import com.alex.qasystem.entity.User;
 import com.alex.qasystem.service.QuestionSubscriptionService;
+import org.apache.ibatis.javassist.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.security.auth.message.AuthException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -49,13 +51,13 @@ public class QuestionSubscriptionServiceImpl implements QuestionSubscriptionServ
     }
 
     @Override
-    public QuestionSubscription deleteQuestionSubscriptionById(User user, Integer questionSubscriptionId) {
+    public QuestionSubscription deleteQuestionSubscriptionById(User user, Integer questionSubscriptionId) throws NotFoundException, AuthException {
         QuestionSubscription subscription = questionSubscriptionMapper.selectById(questionSubscriptionId);
         if (subscription == null) {
-            throw new RuntimeException("找不到该问题关注. questionSubscriptionId: " + questionSubscriptionId);
+            throw new NotFoundException("找不到该问题关注. questionSubscriptionId: " + questionSubscriptionId);
         }
         if (!subscription.getUserId().equals(user.getId())) {
-            throw new RuntimeException("没有删除权限. userId: " + user.getId());
+            throw new AuthException("没有删除权限. userId: " + user.getId());
         }
         questionSubscriptionMapper.deleteById(questionSubscriptionId);
         return subscription;

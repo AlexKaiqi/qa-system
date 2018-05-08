@@ -26,7 +26,7 @@
         <div class="collapse navbar-collapse" id="navbarsExample04">
             <ul class="navbar-nav mr-auto">
                 <li class="nav-item">
-                    <a class="nav-link" href="/questions">Questions</a>
+                    <a class="nav-link" href="/questions/all">Questions</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="/questions/tagged">Tags</a>
@@ -97,6 +97,7 @@
      * 判断登录状态, 替换登录标志
      */
     var $navProfileName = $('.nav-profile-name');
+
     if (localStorage.getItem('token') === null
         || localStorage.getItem('PROFILE_NAME') === null
         || localStorage.getItem('PROFILE_IMG_SRC') === null
