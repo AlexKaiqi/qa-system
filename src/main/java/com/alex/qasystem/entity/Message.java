@@ -71,6 +71,7 @@ public class Message {
         this.status = status;
     }
 
+    public boolean isActive() { return status == 0; }
 
     @Override
     public String toString() {

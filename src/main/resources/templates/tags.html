@@ -13,22 +13,81 @@
 
     <div class="row mb-4">
         <h2>Tags</h2>
-        <a href="/questions/ask" class="ml-auto">
-            <button type="button" class="btn btn-lg btn-outline-success">提问</button>
-        </a>
+        <button class="btn btn-sm btn-outline-success ml-auto" data-toggle="modal" data-target="#tagAddModal">新增标签</button>
+        <!-- Modal -->
+        <div class="modal fade tag-edit-modal" id="tagAddModal"
+             tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <form class="tag-add-form" action="/tags">
+                            <div class="form-group">
+                                <label>标签名称</label>
+                                <input name="title" class="form-control" type="text"/>
+                            </div>
+                            <div class="form-group">
+                                <label>标签描述</label>
+                                <textarea rows="6" name="description" class="form-control"></textarea>
+                            </div>
+                            <button class="btn btn-primary" type="submit">保存修改</button>
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">取消
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
     <div class="card-columns">
-        <div th:each="taggedQuestion: ${taggedQuestions}" class="card card-deck">
+        <div th:each="taggedQuestion: ${taggedQuestions}" class="card bg-light">
             <div class="card-body">
-                <h5 th:text="${taggedQuestion.getTag().getTitle()}" class="card-title" >Tag Name</h5>
-                <p th:text="${taggedQuestion.getTag().getDescription()}" class="card-text">Tag Description</p>
+                <h5 th:text="${taggedQuestion.getTag().getTitle()}" class="card-title">Tag Name</h5>
+                <p class="card-text" th:text="${taggedQuestion.getTag().getDescription()}" style="font-size: 0.8rem"></p>
                 <a th:href="@{${'/questions/tagged/'+taggedQuestion.getTag().getTitle()}}" href="#" class="card-link">
                     <span th:text="${taggedQuestion.getQuestions().size()}">#</span>-asked
                 </a>
-                <a href="#" class="card-link">Another link</a>
+                <button class="btn btn-outline-secondary btn-sm float-right" data-toggle="modal"
+                        th:attr="data-target=${'#tagEditModal-'+taggedQuestion.getTag().getId()}">编辑
+                </button>
             </div>
+            <!-- Modal -->
+            <div class="modal fade tag-edit-modal" th:id="${'tagEditModal-'+taggedQuestion.getTag().getId()}"
+                 tabindex="-1" role="dialog">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h3 th:text="${taggedQuestion.getTag().getTitle()}"></h3>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <form class="tag-edit-form"
+                                  th:action="@{${'/tags/'+taggedQuestion.getTag().getId()}}">
+                                <input name="tagId" type="text" th:value="${taggedQuestion.getTag().getId()}" hidden/>
+                                <div class="form-group">
+                                    <label>标签描述</label>
+                                    <textarea rows="6" name="description" class="form-control"
+                                              th:text="${taggedQuestion.getTag().getDescription()}">
+                                    </textarea>
+                                </div>
+                                <button class="btn btn-primary" type="submit">保存修改</button>
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">取消
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
         </div>
+
     </div>
 </div>
 
@@ -37,7 +96,79 @@
 <script th:replace="fragments/snipplets:: script"></script>
 
 <script>
+    /**
+     * 编辑标签modal
+     */
+    $(".tag-edit-modal").each(function (i) {
+        var id = $(this).attr('id');
+        $(this).on('show.bs.modal', function (event) {
 
+        });
+        $(this).find('.tag-edit-form').submit(function (event) {
+            if (!hasValidToken()) {
+                alert("请先登录");
+                localStorage.removeItem("token");
+                event.preventDefault();
+                location.replace('/user/sign-in');
+                return;
+            }
+            var url = $(this).attr('action');
+            var formData = {
+                description: $(this).find("textarea[name='description']").val(),
+                token: localStorage.getItem("token")
+            };
+            $.ajax({
+                type: 'PUT', // define the type of HTTP verb we want to use (POST for our form)
+                url: url, // the url where we want to POST
+                data: formData, // our data object
+                dataType: 'json', // what type of data do we expect back from the server
+                encode: true,
+                success: function (data) {
+                    if (data.success === true) {
+                        location.reload();
+                    } else {
+                        alert(data.message);
+                    }
+                }
+            });
+            // stop the form from submitting the normal way and refreshing the page
+            event.preventDefault();
+        });
+    });
+    /**
+     * 新增标签
+     */
+    $('.tag-add-form').submit(function (event) {
+        if (!hasValidToken()) {
+            alert("请先登录");
+            localStorage.removeItem("token");
+            event.preventDefault();
+            location.replace('/user/sign-in');
+            return;
+        }
+        var url = $(this).attr('action');
+        var formData = {
+            title: $(this).find("input[name='title']").val(),
+            description: $(this).find("textarea[name='description']").val(),
+            token: localStorage.getItem("token")
+        };
+        $.ajax({
+            type: 'POST', // define the type of HTTP verb we want to use (POST for our form)
+            url: url, // the url where we want to POST
+            data: formData, // our data object
+            dataType: 'json', // what type of data do we expect back from the server
+            encode: true,
+            success: function (data) {
+                if (data.success === true) {
+                    location.reload();
+                } else {
+                    alert(data.message);
+                }
+            }
+        });
+        // stop the form from submitting the normal way and refreshing the page
+        event.preventDefault();
+    })
 </script>
 </body>
 </html>

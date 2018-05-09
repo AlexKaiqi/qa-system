@@ -41,31 +41,31 @@ public class BookmarkServiceImpl implements BookmarkService {
     }
 
     @Override
-    public Bookmark addBookmark(Integer userId, Integer questionId) {
+    public Bookmark addBookmark(User user, Integer questionId) {
         // 检查是否已经收藏, 如果有直接返回.
-        List<Bookmark> bookmarks = bookmarkMapper.selectByUserId(userId);
+        List<Bookmark> bookmarks = bookmarkMapper.selectByUserId(user.getId());
         for (Bookmark bookmark : bookmarks) {
             if (bookmark.getQuestionId().equals(questionId)) {
                 return bookmark;
             }
         }
         Bookmark bookmark = new Bookmark();
-        bookmark.setUserId(userId);
+        bookmark.setUserId(user.getId());
         bookmark.setQuestionId(questionId);
         bookmarkMapper.insert(bookmark);
         return bookmark;
     }
 
     @Override
-    public Bookmark deleteBookmarkById(User user, Integer bookmarkId) throws NotFoundException, AuthException {
-        Bookmark bookmark = bookmarkMapper.selectById(bookmarkId);
+    public Bookmark deleteBookmarkByQuestionId(User user, Integer questionId) throws NotFoundException, AuthException {
+        Bookmark bookmark = bookmarkMapper.selectByUserIdAndQuestionId(user.getId(), questionId);
         if (bookmark == null) {
-            throw new NotFoundException("找不到该问题搜藏. bookmarkId: " + bookmarkId);
+            throw new NotFoundException("找不到该问题搜藏. bookmarkId: " + questionId);
         }
         if (!bookmark.getUserId().equals(user.getId())) {
             throw new AuthException("没有删除收藏的权限. userId: " + user.getId());
         }
-        bookmarkMapper.deleteById(bookmarkId);
+        bookmarkMapper.deleteById(bookmark.getId());
         return bookmark;
     }
 

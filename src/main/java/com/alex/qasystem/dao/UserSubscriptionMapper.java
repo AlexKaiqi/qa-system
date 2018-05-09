@@ -21,6 +21,9 @@ public interface UserSubscriptionMapper {
     @Delete("DELETE FROM user_subscription WHERE user_id = #{userId}")
     Integer deleteByUserId(@Param("userId") Integer userId);
 
+    @Delete("DELETE FROM user_subscription WHERE user_id = #{userId} and watched_user_id = #{watchedUserId}")
+    Integer deleteByUserIdAndWatchedUserId(@Param("userId") Integer userId, @Param("watchedUserId") Integer watchedUserId);
+
     @Select("SELECT * FROM user_subscription WHERE id = #{id} ")
     @Results(id = "userSubscriptionResult", value = {
             @Result(property = "id", column = "id", javaType = Integer.class),
@@ -36,5 +39,9 @@ public interface UserSubscriptionMapper {
     @Select("SELECT * FROM user_subscription WHERE watched_user_id = #{watchedUserId}")
     @ResultMap("userSubscriptionResult")
     List<UserSubscription> selectByWatchedUserId(@Param("watchedUserId") Integer watchedUserId);
+
+    @Select("SELECT * FROM user_subscription WHERE user_id = #{userId} and watched_user_id = #{watchedUserId} limit 1")
+    @ResultMap("userSubscriptionResult")
+    UserSubscription selectByUserIdAndWatchedUserId(@Param("userId") Integer userId, @Param("watchedUserId") Integer watchedUserId);
 
 }

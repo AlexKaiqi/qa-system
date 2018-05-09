@@ -12,9 +12,9 @@ public interface QuestionSubscriptionService {
 
     List<Question> getSubscribedQuestionsByUserId(Integer userId);
 
-    QuestionSubscription addQuestionSubscription(Integer userId, Integer questionId);
+    QuestionSubscription addQuestionSubscription(User user, Integer questionId);
 
-    QuestionSubscription deleteQuestionSubscriptionById(User user, Integer id) throws NotFoundException, AuthException;
+    QuestionSubscription deleteByUserIdAndQuestionId(User user, Integer questionId) throws NotFoundException, AuthException;
 
 
 }

@@ -14,6 +14,12 @@
 <div class="container">
     <div class="row">
         <h2 th:text="${question.getTitle()}">Question Title</h2>
+        <a class="text-secondary question-bookmark-link" title="收藏" href="#">
+            <span class="oi oi-star" style="font-size: 2rem"></span>
+        </a>
+        <a class="text-secondary question-subscription-link" title="关注" href="#">
+            <span class="oi oi-eye" style="font-size: 2rem"></span>
+        </a>
         <a href="/questions/ask" class="ml-auto">
             <button type="button" class="btn btn-lg btn-outline-success">提问</button>
         </a>
@@ -25,7 +31,10 @@
                 <div class="col-2">
                     <div class="profile-info-card">
                         <img class="img-fluid" th:src="${question.getUser().getProfileImgSrc()}" src="#">
-                        <p th:text="${question.getUser().getProfileName()}"></p>
+                        <span th:text="${question.getUser().getProfileName()}"></span>
+                        <a class="user-subscription-link text-secondary" title="关注" href="#">
+                            <span class="oi oi-eye" style="font-size: 1rem"></span>
+                        </a>
                         <p th:text="${'reputations: '+question.getUser().getReputation()}"></p>
                     </div>
                     <form class="approval-form  d-inline-block"
@@ -68,7 +77,7 @@
                                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                             <span aria-hidden="true">&times;</span>
                                         </button>
-                                        <form class="question-edit-form" th:target="${'/questions/'+question.getId()}">
+                                        <form class="question-edit-form" th:action="@{${'/questions/'+question.getId()}}">
                                             <input name="questionId" type="text" th:value="${question.getId()}" hidden/>
                                             <div class="form-group">
                                                 <label>标题</label>
@@ -112,6 +121,9 @@
                                 <span th:text="${comment.getUser().getProfileName()} "
                                       class="text-info">User Name</span>
                                 <span th:text="${comment.getCreateTime()}" class="text-secondary">Create Time</span>
+                                <form class="comment-delete-form d-inline" th:action="@{${'/questions/'+question.getId()+'/comments/'+comment.getId()}}">
+                                    <button class="btn btn-sm btn-outline-secondary" type="submit">删除</button>
+                                </form>
                                 <div th:id="${'question-comment-'+comment.getId()}" class="editor-data-read-only">
                                     问题评论
                                 </div>
@@ -138,13 +150,16 @@
                 </div>
             </div>
 
-            <h3>回答</h3>
+            <h3 th:text="${question.getAnswers().size() + '个回答'}">回答</h3>
 
             <div th:each="answer: ${question.getAnswers()}" class="row">
                 <div class="col-2">
                     <div class="profile-info-card">
                         <img class="img-fluid" th:src="${answer.getUser().getProfileImgSrc()}" src="#">
-                        <p th:text="${answer.getUser().getProfileName()}"></p>
+                        <span th:text="${answer.getUser().getProfileName()}"></span>
+                        <a class="user-subscription-link text-secondary" title="关注" href="#">
+                            <span class="oi oi-eye" style="font-size: 1rem"></span>
+                        </a>
                         <p th:text="${'reputations: '+answer.getUser().getReputation()}"></p>
                     </div>
                     <form class="approval-form  d-inline-block"
@@ -186,11 +201,10 @@
                                             <span aria-hidden="true">&times;</span>
                                         </button>
                                         <form class="answer-edit-form"
-                                              th:target="${'/questions/'+question.getId()+'/answers/'+answer.getId()}">
+                                              th:action="@{${'/questions/'+question.getId()+'/answers/'+answer.getId()}}">
                                             <input name="answerId" type="text" th:value="${answer.getId()}" hidden/>
                                             <div class="form-group">
                                                 <label>回答内容</label>
-                                                <input name="question-description" type="hidden">
                                                 <div class="answer-edit-quill" style="height: 180px;">
                                                 </div>
                                             </div>
@@ -213,6 +227,9 @@
                                 </script>
                                 <span th:text="${comment.getUser().getProfileName()}" class="text-info">User Name</span>
                                 <span th:text="${comment.getCreateTime()}" class="text-secondary">Create Time</span>
+                                <form class="comment-delete-form d-inline" th:action="@{${'/questions/'+question.getId()+'/answers/'+answer.getId()+'/comments/'+comment.getId()}}">
+                                    <button class="btn btn-sm btn-outline-secondary" type="submit">删除</button>
+                                </form>
                                 <div th:id="${'answer-comment-'+comment.getId()}" class="editor-data-read-only">
                                     回答评论
                                 </div>
@@ -253,11 +270,13 @@
         </div>
 
         <div class="col-md-3">
-            <ul class="list-group">
-                <li class="list-group-item">
+            <p th:text="${'提问时间: '+question.getCreateTime()}" style="font-size: 0.8rem"></p>
+            <h5>相关问题</h5>
 
-                </li>
-            </ul>
+            <div th:each="q: ${relativeQuestions}" th:unless="${q.getId()==question.getId()}" class="" style="font-size: 0.8rem">
+                <a class="nav-link" th:text="${q.getTitle()}" th:href="@{${'/questions/'+q.getId()+'/'+q.getTitle()}}"></a>
+            </div>
+
         </div>
     </div>
 </div>
@@ -353,7 +372,7 @@
             var $content = JSON.parse(quillReadOnlyData[contentId]);
             questionEditQuill.setContents($content);
         }
-        $(this).find('.answer-edit-form').submit(function (event) {
+        $(this).find('.question-edit-form').submit(function (event) {
             if (!hasValidToken()) {
                 alert("请先登录");
                 localStorage.removeItem("token");
@@ -364,8 +383,8 @@
             var url = $(this).attr('action');
             var formData = {
                 title: $(this).find("input[name='title']").val(),
-                tags: $('#tags').val().split(/\+/g),
-                description: JSON.stringify(answerEditQuills[id].getContents()),
+                tags: $(this).find("input[name='tags']").val().split(/\+/g),
+                description: JSON.stringify(questionEditQuill.getContents()),
                 token: localStorage.getItem("token")
             };
             $.ajax({
@@ -382,6 +401,8 @@
                     }
                 }
             });
+            // stop the form from submitting the normal way and refreshing the page
+            event.preventDefault();
         });
     });
 
@@ -443,6 +464,8 @@
                     }
                 }
             });
+            // stop the form from submitting the normal way and refreshing the page
+            event.preventDefault();
         });
     });
 
@@ -516,6 +539,36 @@
             // stop the form from submitting the normal way and refreshing the page
             event.preventDefault();
         });
+    });
+
+    /**
+     * 删除评论
+     */
+    $('.comment-delete-form').each(function(i) {
+        $(this).submit(function (event) {
+            if (!hasValidToken()) {
+                alert("请先登录");
+                localStorage.removeItem("token");
+                event.preventDefault();
+                location.replace('/user/sign-in');
+                return;
+            }
+            var formData = {
+                token: localStorage.getItem('token'),
+            };
+            $.ajax({
+                type: 'DELETE', // define the type of HTTP verb we want to use (POST for our form)
+                url: $(this).attr('action') +'?token='+localStorage.getItem('token'), // the url where we want to POST
+                success: function (data) {
+                    if (data.success === true) {
+                        location.reload();
+                    } else {
+                        alert(data.message);
+                    }
+                }
+            });
+            event.preventDefault();
+        })
     });
 
     /**

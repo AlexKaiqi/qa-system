@@ -34,33 +34,37 @@ public class UserSubscriptionServiceImpl implements UserSubscriptionService {
         List<UserSubscription> subscriptions = userSubscriptionMapper.selectByUserId(userId);
         List<User> users = new ArrayList<>();
         for (UserSubscription subscription : subscriptions) {
-            users.add(userMapper.selectById(subscription.getUserId()));
+            users.add(userMapper.selectSimpleById(subscription.getWatchedUserId()));
         }
         return users;
     }
 
     @Override
-    public UserSubscription addUserSubscription(Integer userId, Integer watchedUserId) {
-
+    public UserSubscription addUserSubscription(User user, Integer watchedUserId) {
+        // 检查是否已经收藏, 如果有直接返回.
+        List<UserSubscription> subscriptions = userSubscriptionMapper.selectByUserId(user.getId());
+        for (UserSubscription subscription : subscriptions) {
+            if (subscription.getWatchedUserId().equals(watchedUserId)) {
+                return subscription;
+            }
+        }
         UserSubscription subscription = new UserSubscription();
-        subscription.setUserId(userId);
-        subscription.setUserId(userId);
+        subscription.setUserId(user.getId());
+        subscription.setWatchedUserId(watchedUserId);
         userSubscriptionMapper.insert(subscription);
         return subscription;
     }
 
     @Override
-    public UserSubscription deleteUserSubscriptionById(User user, Integer userSubscriptionId) throws NotFoundException, AuthException {
-        UserSubscription subscription = userSubscriptionMapper.selectById(userSubscriptionId);
+    public UserSubscription deleteByUserIdAndWatchedUserId(User user, Integer watchedUserId) throws NotFoundException, AuthException {
+        UserSubscription subscription = userSubscriptionMapper.selectByUserIdAndWatchedUserId(user.getId(), watchedUserId);
         if (subscription == null) {
-            throw new NotFoundException("找不到该问题关注. userSubscriptionId: " + userSubscriptionId);
+            throw new NotFoundException("找不到该问题关注. watchedUserId: " + watchedUserId);
         }
         if (!subscription.getUserId().equals(user.getId())) {
             throw new AuthException("没有删除权限. userId: " + user.getId());
         }
-        userSubscriptionMapper.deleteById(userSubscriptionId);
+        userSubscriptionMapper.deleteById(subscription.getId());
         return subscription;
     }
-
-
 }

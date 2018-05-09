@@ -42,24 +42,31 @@ public class QuestionSubscriptionServiceImpl implements QuestionSubscriptionServ
 
 
     @Override
-    public QuestionSubscription addQuestionSubscription(Integer userId, Integer questionId) {
+    public QuestionSubscription addQuestionSubscription(User user, Integer questionId) {
+        // 检查是否已经收藏, 如果有直接返回.
+        List<QuestionSubscription> subscriptions = questionSubscriptionMapper.selectByUserId(user.getId());
+        for (QuestionSubscription subscription : subscriptions) {
+            if (subscription.getQuestionId().equals(questionId)) {
+                return subscription;
+            }
+        }
         QuestionSubscription subscription = new QuestionSubscription();
-        subscription.setUserId(userId);
+        subscription.setUserId(user.getId());
         subscription.setQuestionId(questionId);
         questionSubscriptionMapper.insert(subscription);
         return subscription;
     }
 
     @Override
-    public QuestionSubscription deleteQuestionSubscriptionById(User user, Integer questionSubscriptionId) throws NotFoundException, AuthException {
-        QuestionSubscription subscription = questionSubscriptionMapper.selectById(questionSubscriptionId);
+    public QuestionSubscription deleteByUserIdAndQuestionId(User user, Integer questionId) throws NotFoundException, AuthException {
+        QuestionSubscription subscription = questionSubscriptionMapper.selectByUserIdAndQuestionId(user.getId(), questionId);
         if (subscription == null) {
-            throw new NotFoundException("找不到该问题关注. questionSubscriptionId: " + questionSubscriptionId);
+            throw new NotFoundException("找不到该问题关注. questionId: " + questionId);
         }
         if (!subscription.getUserId().equals(user.getId())) {
             throw new AuthException("没有删除权限. userId: " + user.getId());
         }
-        questionSubscriptionMapper.deleteById(questionSubscriptionId);
+        questionSubscriptionMapper.deleteById(subscription.getId());
         return subscription;
     }
 

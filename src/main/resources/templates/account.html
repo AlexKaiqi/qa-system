@@ -1,11 +1,151 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
+<html xmlns:th="http://www.thymeleaf.org">
+<head lang="en">
+    <title>个人中心</title>
+    <meta name="description" content="个人中心"/>
+    <meta th:replace="fragments/snipplets:: head" />
+    <link rel="stylesheet" href="/css/account.css" th:href="@{/css/account.css}">
 </head>
 <body>
 
+<div th:replace="fragments/snipplets :: nav">...</div>
 
+<div class="container text-center">
+
+    <div class="card hovercard mx-auto mb-4">
+        <div class="card-background">
+            <img class="card-bkimg" alt="" src="https://steamcdn-a.akamaihd.net/steamcommunity/public/images/items/441870/72cd26e14b7fcba028206a06f10548c0d5174cfc.jpg">
+        </div>
+        <div class="useravatar">
+            <img alt="" src="#" th:src="@{${user.getProfileImgSrc()}}">
+        </div>
+        <div class="card-info">
+            <span class="card-title" th:text="${user.getProfileName()}">Profile Name</span>
+        </div>
+    </div>
+
+    <div id="info-group">
+
+        <div class="btn-group btn-group-lg btn-group-toggle">
+            <button type="button" class="btn btn-secondary" data-toggle="collapse" data-target="#messages" data-parent="#info-group">
+                消息
+                <span class="badge badge-pill badge-danger" th:text="${unreadMessages.size()}"
+                    th:unless="${unreadMessages.size()>=0}"></span>
+            </button>
+            <button type="button" class="btn btn-secondary" data-toggle="collapse" data-target="#bookmarks" data-parent="#info-group">
+                我收藏的问题
+                <span class="badge badge-pill badge-info" th:text="${bookmarks.size()}"></span>
+            </button>
+            <button type="button" class="btn btn-secondary" data-toggle="collapse" data-target="#subscribedQuestions" data-parent="#info-group">
+                我关注的问题
+                <span class="badge badge-pill badge-info" th:text="${subscribedQuestions.size()}"></span>
+            </button>
+            <button type="button" class="btn btn-secondary" data-toggle="collapse" data-target="#subscribedUsers" data-parent="#info-group">
+                我关注的用户
+                <span class="badge badge-pill badge-info" th:text="${subscribedUsers.size()}"></span>
+            </button>
+            <button type="button" class="btn btn-secondary" data-toggle="collapse" data-target="#myQuestions" data-parent="#info-group">
+                我的提问
+                <span class="badge badge-pill badge-success" th:text="${myQuestions.size()}"></span>
+            </button>
+            <button type="button" class="btn btn-secondary" data-toggle="collapse" data-target="#myAnswers" data-parent="#info-group">
+                我的回答
+                <span class="badge badge-pill badge-success" th:text="${myAnswers.size()}"></span>
+            </button>
+        </div>
+
+        <div class="accordion-group mx-auto text-left">
+            <!-- 消息 -->
+            <div class="collapse multi-collapse accordion " id="messages">
+                <div class="card card-body">
+                    <ul class="list-group">
+                        <li class="list-group-item"
+                            th:each="m: ${unreadMessages}"
+                            th:utext="${m.getContent()}" th:attr="data-message-id=${m.getId()}">
+                        </li>
+                    </ul>
+                    <ul class="list-group">
+                        <li class="list-group-item"
+                            th:each="m: ${readMessages}"
+                            th:utext="${m.getContent()}">
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <!-- 收藏的问题 -->
+            <div class="collapse multi-collapse accordion " id="bookmarks">
+                <div class="card card-body">
+                    <ul class="list-group">
+                        <li class="list-group-item"
+                            th:each="q: ${bookmarks}"
+                            th:text="${q.getTitle()}">
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <!-- 关注的问题 -->
+            <div class="collapse multi-collapse accordion " id="subscribedQuestions">
+                <div class="card card-body">
+                    <ul class="list-group">
+                        <li class="list-group-item"
+                            th:each="q: ${subscribedQuestions}"
+                            th:text="${q.getTitle()}">
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <!-- 关注的用户 -->
+            <div class="collapse multi-collapse accordion " id="subscribedUsers">
+                <div class="card card-body">
+                    <ul class="list-group">
+                        <li class="list-group-item"
+                            th:each="u: ${subscribedUsers}"
+                            th:text="${u.getProfileName()}">
+                        </li>
+                    </ul></div>
+            </div>
+            <!-- 我的提问  -->
+            <div class="collapse multi-collapse accordion " id="myQuestions">
+                <div class="card card-body">
+                    <ul class="list-group">
+                        <li class="list-group-item"
+                            th:each="q: ${myQuestions}"
+                            th:text="${q.getTitle()}">
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <!-- 我的回答 -->
+            <div class="collapse multi-collapse accordion " id="myAnswers">
+                <div class="card card-body">
+                    <ul class="list-group">
+                        <li class="list-group-item"
+                            th:each="a: ${myAnswers}"
+                            th:text="${a.getQuestionId()}">
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+</div>
+<div class="container text-center">
+
+
+
+</div>
+
+<div th:replace="fragments/snipplets:: footer"></div>
+
+<script th:replace="fragments/snipplets:: script"></script>
+
+<script>
+    var $infoGroup = $('#info-group');
+    $infoGroup.on('show.bs.collapse','.collapse', function() {
+        $infoGroup.find('.collapse.in').collapse('hide');
+    });
+</script>
 </body>
 </html>

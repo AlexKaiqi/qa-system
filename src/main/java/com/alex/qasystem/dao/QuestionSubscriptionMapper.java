@@ -24,6 +24,9 @@ public interface QuestionSubscriptionMapper {
     @Delete("DELETE FROM question_subscription WHERE question_id = #{questionId} ")
     Integer deleteByQuestionId(@Param("questionId") Integer questionId);
 
+    @Delete("DELETE FROM question_subscription WHERE user_id = #{userId} and question_id = #{questionId}")
+    Integer deleteByUserIdAndQuestionId(@Param("userId") Integer userId, @Param("questionId") Integer questionId);
+
     @Select("SELECT * FROM question_subscription WHERE id = #{id} ")
     @Results(id = "questionSubscriptionResult", value = {
             @Result(property = "id", column = "id", javaType = Integer.class),
@@ -39,5 +42,9 @@ public interface QuestionSubscriptionMapper {
     @Select("SELECT * FROM question_subscription WHERE question_id = #{questionId}")
     @ResultMap("questionSubscriptionResult")
     List<QuestionSubscription> selectByQuestionId(@Param("questionId") Integer questionId);
+
+    @Select("SELECT * FROM question_subscription WHERE user_id = #{userId} and question_id = #{questionId} limit 1")
+    @ResultMap("questionSubscriptionResult")
+    QuestionSubscription selectByUserIdAndQuestionId(@Param("userId") Integer userId, @Param("questionId") Integer questionId);
 
 }

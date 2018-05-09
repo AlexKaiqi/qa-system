@@ -127,6 +127,8 @@ public class Question {
         this.approvals = approvals;
     }
 
+    public boolean isActive() { return status == 0; }
+
     @Override
     public String toString() {
         try {

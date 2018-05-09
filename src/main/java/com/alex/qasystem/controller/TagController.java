@@ -42,10 +42,26 @@ public class TagController {
     }
 
     @PostMapping("/tags")
-    public Map<String, Object> addTag() {
+    public Map<String, Object> addTag(@RequestParam String title,
+                                      @RequestParam String description,
+                                      @RequestParam String token) {
+        User user = userService.getUserIdByToken(token);
         Map<String, Object> map = new HashMap<>(2);
-
-        return null;
+        if (user == null) {
+            map.put("success", false);
+            map.put("message", "需要验证身份");
+            return map;
+        }
+        try {
+            tagService.addTag(user, title, description);
+        } catch (Exception e) {
+            e.printStackTrace();
+            map.put("success", false);
+            map.put("message", "操作失败");
+            return map;
+        }
+        map.put("success", true);
+        return map;
     }
 
     @DeleteMapping("/tags/{tagId}")

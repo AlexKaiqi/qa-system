@@ -111,6 +111,8 @@ public class User {
         this.status = status;
     }
 
+    public boolean isAdmin() { return groupId == 1; }
+
     @Override
     public String toString() {
         try {

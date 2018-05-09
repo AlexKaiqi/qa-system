@@ -12,8 +12,8 @@ public interface BookmarkService {
 
     List<Question> selectBookmarkedQuestionByUserId(Integer userId);
 
-    Bookmark addBookmark(Integer userId, Integer questionId);
+    Bookmark addBookmark(User user, Integer questionId);
 
-    Bookmark deleteBookmarkById(User user, Integer bookmarkId) throws NotFoundException, AuthException;
+    Bookmark deleteBookmarkByQuestionId(User user, Integer questionId) throws NotFoundException, AuthException;
 
 }

@@ -22,6 +22,9 @@ public interface AnswerApprovalMapper {
     @Delete("DELETE FROM answer_approval WHERE id = #{id}")
     Integer deleteById(@Param("id") Integer id);
 
+    @Delete("DELETE FROM answer_approval WHERE answer_id = #{answerId}")
+    Integer deleteByAnswerId(@Param("answerId") Integer answerId);
+
     @Update("<script>" +
             "UPDATE answer_approval" +
             "<set>" +

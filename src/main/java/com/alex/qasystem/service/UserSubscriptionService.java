@@ -11,8 +11,8 @@ public interface UserSubscriptionService {
 
     List<User> getSubscribedUserByUserId(Integer userId);
 
-    UserSubscription addUserSubscription(Integer userId, Integer watchedUserId);
+    UserSubscription addUserSubscription(User user, Integer watchedUserId);
 
-    UserSubscription deleteUserSubscriptionById(User user, Integer userSubscriptionId) throws NotFoundException, AuthException;
+    UserSubscription deleteByUserIdAndWatchedUserId(User user, Integer watchedUserId) throws NotFoundException, AuthException;
 
 }

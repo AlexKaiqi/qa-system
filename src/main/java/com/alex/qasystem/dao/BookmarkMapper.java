@@ -24,6 +24,9 @@ public interface BookmarkMapper {
     @Delete("DELETE FROM bookmark WHERE question_id = #{questionId} ")
     Integer deleteByQuestionId(@Param("questionId") Integer questionId);
 
+    @Delete("DELETE FROM bookmark WHERE user_id = #{userId} and question_id = #{questionId}")
+    Integer deleteByUserIdAndQuestionId(@Param("userId") Integer userId, @Param("questionId") Integer questionId);
+
     @Select("SELECT * FROM bookmark WHERE id = #{id} ")
     @Results(id = "bookmarkResult", value = {
             @Result(property = "id", column = "id", javaType = Integer.class),
@@ -39,5 +42,9 @@ public interface BookmarkMapper {
     @Select("SELECT * FROM bookmark WHERE question_id = #{questionId}")
     @ResultMap("bookmarkResult")
     List<Bookmark> selectByQuestionId(@Param("questionId") Integer questionId);
+
+    @Select("SELECT * FROM bookmark WHERE user_id = #{userId} and question_id = #{questionId} limit 1")
+    @ResultMap("bookmarkResult")
+    Bookmark selectByUserIdAndQuestionId(@Param("userId") Integer userId, @Param("questionId") Integer questionId);
 
 }
