@@ -39,7 +39,7 @@ public class SubscriptionController {
         this.userService = userService;
     }
 
-    @PostMapping("/questions/{questionId}/subscribe")
+    @PostMapping("/questions/{questionId}/subscription")
     public Map<String, Object> addQuestionSubscription(@PathVariable Integer questionId,
                                                        @RequestParam String token) {
         Map<String, Object> map = new HashMap<>(2);
@@ -60,7 +60,7 @@ public class SubscriptionController {
         return map;
     }
 
-    @DeleteMapping("/questions/{questionId}/subscribe")
+    @DeleteMapping("/questions/{questionId}/subscription")
     public Map<String, Object> deleteQuestionSubscription(@PathVariable Integer questionId,
                                                        @RequestParam String token) {
         Map<String, Object> map = new HashMap<>(2);
@@ -81,7 +81,7 @@ public class SubscriptionController {
         return map;
     }
 
-    @PostMapping("/user/{watchedUserId}/subscribe")
+    @PostMapping("/users/{watchedUserId}/subscription")
     public Map<String, Object> addUserSubscription(@PathVariable Integer watchedUserId,
                                                    @RequestParam String token) {
         Map<String, Object> map = new HashMap<>(2);
@@ -102,7 +102,7 @@ public class SubscriptionController {
         return map;
     }
 
-    @DeleteMapping("/user/{watchedUserId}/subscribe")
+    @DeleteMapping("/users/{watchedUserId}/subscription")
     public Map<String, Object> deleteUserSubscription(@PathVariable Integer watchedUserId,
                                                    @RequestParam String token) {
         Map<String, Object> map = new HashMap<>(2);

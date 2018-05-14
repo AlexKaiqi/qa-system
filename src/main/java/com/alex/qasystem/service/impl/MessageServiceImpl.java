@@ -81,7 +81,7 @@ public class MessageServiceImpl implements MessageService {
             Message message = new Message();
             message.setType(0);
             message.setReceiverId(s.getUserId());
-            message.setContent("<a href='/questions/" + question.getId() + "/" + question.getTitle() + "'>你关注的用户: " + user.getProfileName() + " 有了新回答</a>");
+            message.setContent("<a class='nav-link' href='/questions/" + question.getId() + "/" + question.getTitle() + "'>你关注的用户: " + user.getProfileName() + " 有了新回答</a>");
             message.setStatus(0);
             message.setSendTime(new Date());
             messages.add(message);
@@ -105,6 +105,7 @@ public class MessageServiceImpl implements MessageService {
         if (!message.getReceiverId().equals(user.getId())) {
             throw new AuthException("没有删除消息的权限. userId: " + user.getId());
         }
+        messageMapper.deleteById(messageId);
         return message;
     }
 
@@ -117,7 +118,7 @@ public class MessageServiceImpl implements MessageService {
             Message message = new Message();
             message.setType(0);
             message.setReceiverId(s.getUserId());
-            message.setContent("<a href='/questions/" + question.getId() + "/" + question.getTitle() + "'>你关注的用户: " + user.getProfileName() + " 提出了新问题</a>");
+            message.setContent("<a class='nav-link' href='/questions/" + question.getId() + "/" + question.getTitle() + "'>你关注的用户: " + user.getProfileName() + " 提出了新问题</a>");
             message.setStatus(0);
             message.setSendTime(new Date());
             messages.add(message);
@@ -126,5 +127,16 @@ public class MessageServiceImpl implements MessageService {
         return messages;
     }
 
+    @Override
+    public Message addNewMedalMessage(MedalRecord medalRecord) {
+        Message message = new Message();
+        message.setType(0);
+        message.setReceiverId(medalRecord.getUserId());
+        message.setContent("新的奖章:" + medalRecord.getMedal().getTitle());
+        message.setStatus(0);
+        message.setSendTime(new Date());
+        messageMapper.insert(message);
+        return message;
+    }
 
 }

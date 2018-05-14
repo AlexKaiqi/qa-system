@@ -3,149 +3,198 @@
 <head lang="en">
     <title>个人中心</title>
     <meta name="description" content="个人中心"/>
-    <meta th:replace="fragments/snipplets:: head" />
-    <link rel="stylesheet" href="/css/account.css" th:href="@{/css/account.css}">
+    <meta th:replace="fragments/snipplets:: head"/>
 </head>
 <body>
 
 <div th:replace="fragments/snipplets :: nav">...</div>
 
-<div class="container text-center">
+<div class="container">
+    <div class="card text-center p-0">
+        <div class="card-body p-0">
+            <div style="background-image: url('https://steamcdn-a.akamaihd.net/steamcommunity/public/images/items/441870/72cd26e14b7fcba028206a06f10548c0d5174cfc.jpg')">
+                <img class="rounded-circle card-img-top mx-auto" th:src="@{${user.getProfileImgSrc()}}"
+                     style="width: 100px; height: auto">
+                <h3 class="card-title">
+                    <span class="card-title text-light" th:text="${user.getProfileName()+': '}">Profile Name</span>
+                    <span class="card-text text-light" th:text="${user.getReputation()}"></span>
+                </h3>
 
-    <div class="card hovercard mx-auto mb-4">
-        <div class="card-background">
-            <img class="card-bkimg" alt="" src="https://steamcdn-a.akamaihd.net/steamcommunity/public/images/items/441870/72cd26e14b7fcba028206a06f10548c0d5174cfc.jpg">
+            </div>
         </div>
-        <div class="useravatar">
-            <img alt="" src="#" th:src="@{${user.getProfileImgSrc()}}">
-        </div>
-        <div class="card-info">
-            <span class="card-title" th:text="${user.getProfileName()}">Profile Name</span>
+
+        <div class="accordion" id="infoGroup">
+            <div class="btn-group d-flex">
+                <button type="button" class="btn btn-secondary w-100" data-toggle="collapse" data-target="#messages"
+                        data-parent="#infoGroup">
+                    消息
+                    <span class="badge badge-pill badge-danger " th:text="${messages.size()}"
+                          th:if="${messages.size()>0}"></span>
+                </button>
+                <button type="button" class="btn btn-secondary w-100" data-toggle="collapse" data-target="#bookmarks"
+                        data-parent="#infoGroup">
+                    收藏
+                    <span class="badge badge-pill badge-info " th:text="${bookmarks.size()}"></span>
+                </button>
+                <button type="button" class="btn btn-secondary w-100" data-toggle="collapse"
+                        data-target="#subscribedQuestions"
+                        data-parent="#infoGroup">
+                    关注的问题
+                    <span class="badge badge-pill badge-info " th:text="${subscribedQuestions.size()}"></span>
+                </button>
+                <button type="button" class="btn btn-secondary w-100" data-toggle="collapse"
+                        data-target="#subscribedUsers"
+                        data-parent="#infoGroup">
+                    关注的用户
+                    <span class="badge badge-pill badge-info " th:text="${subscribedUsers.size()}"></span>
+                </button>
+                <button type="button" class="btn btn-secondary w-100" data-toggle="collapse" data-target="#myQuestions"
+                        data-parent="#infoGroup">
+                    提问
+                    <span class="badge badge-pill badge-success" th:text="${myQuestions.size()}"></span>
+                </button>
+                <button type="button" class="btn btn-secondary w-100" data-toggle="collapse" data-target="#myAnswers"
+                        data-parent="#infoGroup">
+                    回答
+                    <span class="badge badge-pill badge-success" th:text="${myAnswers.size()}"></span>
+                </button>
+                <button type="button" class="btn btn-secondary w-100" data-toggle="collapse" data-target="#myMedals"
+                        data-parent="#infoGroup">
+                    奖章
+                    <span class="badge badge-pill badge-success" th:text="${medalRecords.size()}"></span>
+                </button>
+            </div>
+
+            <div class="accordion-group text-left">
+                <!-- 消息 -->
+                <div class="collapse show" id="messages">
+                    <ul class="list-group">
+                        <li class="list-group-item"
+                            th:each="m: ${messages}">
+                            <span th:utext="${m.getContent()}"></span>
+                            <button class="delete-message btn btn-sm btn-outline-secondary float-right"
+                                    th:attr="data-target-url=${'/messages/'+m.getId()}">删除</button>
+                        </li>
+                    </ul>
+
+                </div>
+                <!--奖章-->
+                <div class="collapse" id="myMedals">
+                    <div class="card-columns">
+                        <div th:each="m: ${medalRecords}" class="card">
+                            <img class="card-img-top w-25 mx-auto" th:src="${m.getMedal().getIconSrc()}" src="icon">
+                            <div class="card-body">
+                                <h5 th:text="${m.getMedal().getTitle()}" class="card-title text-info"></h5>
+                                <div th:text="${m.getMedal().getDescription()}" class="card-text"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- 收藏的问题 -->
+                <div class="collapse " id="bookmarks">
+                    <ul class="list-group">
+                        <li class="list-group-item"
+                            th:each="q: ${bookmarks}">
+                            <span class="oi oi-thumb-up" th:text="${q.getApprovals()}"></span>
+                            <a class="" th:text="${q.getTitle()}"
+                               th:href="${'/questions/'+q.getId()+'/'+q.getTitle()}">
+                            </a>
+                            <button class="delete-bookmark btn btn-sm btn-outline-secondary float-right"
+                                    th:attr="data-target-url=${'/questions/'+q.getId()+'/bookmark'}">取消收藏</button>
+                        </li>
+                    </ul>
+                </div>
+                <!-- 关注的问题 -->
+                <div class="collapse " id="subscribedQuestions">
+                    <ul class="list-group">
+                        <li class="list-group-item"
+                            th:each="q: ${subscribedQuestions}">
+                            <a class="" th:text="${q.getTitle()}"
+                               th:href="${'/questions/'+q.getId()+'/'+q.getTitle()}">
+                            </a>
+                            <span class="oi oi-thumb-up" th:text="${q.getApprovals()}"></span>
+                            <button class="delete-question-subscription btn btn-sm btn-outline-secondary float-right"
+                                    th:attr="data-target-url=${'/questions/'+q.getId()+'/subscription'}">取消关注</button>
+                        </li>
+                    </ul>
+                </div>
+                <!-- 关注的用户 -->
+                <div class="collapse " id="subscribedUsers">
+                    <ul class="list-group">
+                        <li th:each="u: ${subscribedUsers}" class="list-group-item">
+                            <img class="rounded-circle" th:src="${u.getProfileImgSrc()}" style="width: 30px">
+                            <span th:text="${u.getProfileName()}"></span>
+                            <span th:text="${u.getReputation()}" class="oi oi-people"></span>
+                            <button class="delete-user-subscription btn btn-sm btn-outline-secondary float-right"
+                                    th:attr="data-target-url=${'/users/'+u.getId()+'/subscription'}">
+                                取消关注
+                            </button>
+                        </li>
+                    </ul>
+                </div>
+                <!-- 我的提问  -->
+                <div class="collapse " id="myQuestions">
+                    <ul class="list-group">
+                        <li class="list-group-item"
+                            th:each="q: ${myQuestions}">
+                            <a class="" th:text="${q.getTitle()}"
+                               th:href="${'/questions/'+q.getId()+'/'+q.getTitle()}">
+                            </a>
+                            <span th:text="${q.getAnswers().size()+'回答'}"></span>
+                            <span class="oi oi-thumb-up" th:text="${q.getApprovals()}"></span>
+                        </li>
+                    </ul>
+                </div>
+                <!-- 我的回答 -->
+                <div class="collapse " id="myAnswers">
+                    <ul class="list-group">
+                        <li class="list-group-item"
+                            th:each="a: ${myAnswers}" th:with="q=${questionMap.get(a.getQuestionId())}">
+                            <a th:text="${q.getTitle()}" th:href="${'/questions/'+q.getId()+'/'+q.getTitle()}"></a>
+                            <span th:text="${a.getAnswerComments().size()+'评论'}"></span>
+                            <span class="oi oi-thumb-up" th:text="${q.getApprovals()}"></span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
         </div>
     </div>
 
-    <div id="info-group">
+    <div th:replace="fragments/snipplets:: footer"></div>
 
-        <div class="btn-group btn-group-lg btn-group-toggle">
-            <button type="button" class="btn btn-secondary" data-toggle="collapse" data-target="#messages" data-parent="#info-group">
-                消息
-                <span class="badge badge-pill badge-danger" th:text="${unreadMessages.size()}"
-                    th:unless="${unreadMessages.size()>=0}"></span>
-            </button>
-            <button type="button" class="btn btn-secondary" data-toggle="collapse" data-target="#bookmarks" data-parent="#info-group">
-                我收藏的问题
-                <span class="badge badge-pill badge-info" th:text="${bookmarks.size()}"></span>
-            </button>
-            <button type="button" class="btn btn-secondary" data-toggle="collapse" data-target="#subscribedQuestions" data-parent="#info-group">
-                我关注的问题
-                <span class="badge badge-pill badge-info" th:text="${subscribedQuestions.size()}"></span>
-            </button>
-            <button type="button" class="btn btn-secondary" data-toggle="collapse" data-target="#subscribedUsers" data-parent="#info-group">
-                我关注的用户
-                <span class="badge badge-pill badge-info" th:text="${subscribedUsers.size()}"></span>
-            </button>
-            <button type="button" class="btn btn-secondary" data-toggle="collapse" data-target="#myQuestions" data-parent="#info-group">
-                我的提问
-                <span class="badge badge-pill badge-success" th:text="${myQuestions.size()}"></span>
-            </button>
-            <button type="button" class="btn btn-secondary" data-toggle="collapse" data-target="#myAnswers" data-parent="#info-group">
-                我的回答
-                <span class="badge badge-pill badge-success" th:text="${myAnswers.size()}"></span>
-            </button>
-        </div>
+    <script th:replace="fragments/snipplets:: script"></script>
 
-        <div class="accordion-group mx-auto text-left">
-            <!-- 消息 -->
-            <div class="collapse multi-collapse accordion " id="messages">
-                <div class="card card-body">
-                    <ul class="list-group">
-                        <li class="list-group-item"
-                            th:each="m: ${unreadMessages}"
-                            th:utext="${m.getContent()}" th:attr="data-message-id=${m.getId()}">
-                        </li>
-                    </ul>
-                    <ul class="list-group">
-                        <li class="list-group-item"
-                            th:each="m: ${readMessages}"
-                            th:utext="${m.getContent()}">
-                        </li>
-                    </ul>
-                </div>
-            </div>
-            <!-- 收藏的问题 -->
-            <div class="collapse multi-collapse accordion " id="bookmarks">
-                <div class="card card-body">
-                    <ul class="list-group">
-                        <li class="list-group-item"
-                            th:each="q: ${bookmarks}"
-                            th:text="${q.getTitle()}">
-                        </li>
-                    </ul>
-                </div>
-            </div>
-            <!-- 关注的问题 -->
-            <div class="collapse multi-collapse accordion " id="subscribedQuestions">
-                <div class="card card-body">
-                    <ul class="list-group">
-                        <li class="list-group-item"
-                            th:each="q: ${subscribedQuestions}"
-                            th:text="${q.getTitle()}">
-                        </li>
-                    </ul>
-                </div>
-            </div>
-            <!-- 关注的用户 -->
-            <div class="collapse multi-collapse accordion " id="subscribedUsers">
-                <div class="card card-body">
-                    <ul class="list-group">
-                        <li class="list-group-item"
-                            th:each="u: ${subscribedUsers}"
-                            th:text="${u.getProfileName()}">
-                        </li>
-                    </ul></div>
-            </div>
-            <!-- 我的提问  -->
-            <div class="collapse multi-collapse accordion " id="myQuestions">
-                <div class="card card-body">
-                    <ul class="list-group">
-                        <li class="list-group-item"
-                            th:each="q: ${myQuestions}"
-                            th:text="${q.getTitle()}">
-                        </li>
-                    </ul>
-                </div>
-            </div>
-            <!-- 我的回答 -->
-            <div class="collapse multi-collapse accordion " id="myAnswers">
-                <div class="card card-body">
-                    <ul class="list-group">
-                        <li class="list-group-item"
-                            th:each="a: ${myAnswers}"
-                            th:text="${a.getQuestionId()}">
-                        </li>
-                    </ul>
-                </div>
-            </div>
+    <script>
 
-        </div>
-    </div>
+        jQuery('#infoGroup .btn-group button').click(function (e) {
+            jQuery('.collapse').collapse('hide');
+        });
 
-</div>
-<div class="container text-center">
-
-
-
-</div>
-
-<div th:replace="fragments/snipplets:: footer"></div>
-
-<script th:replace="fragments/snipplets:: script"></script>
-
-<script>
-    var $infoGroup = $('#info-group');
-    $infoGroup.on('show.bs.collapse','.collapse', function() {
-        $infoGroup.find('.collapse.in').collapse('hide');
-    });
-</script>
+        $('.delete-message, .delete-bookmark, .delete-user-subscription, .delete-question-subscription').each(function (i) {
+            $(this).click(function () {
+                if (!hasValidToken()) {
+                    alert("请先登录");
+                    localStorage.removeItem("token");
+                    event.preventDefault();
+                    location.replace('/user/sign-in');
+                    return;
+                }
+                var url = $(this).data('target-url')+'?token='+localStorage.getItem('token');
+                $.ajax({
+                    type: 'DELETE', // define the type of HTTP verb we want to use (POST for our form)
+                    url: url, // the url where we want to POST
+                    dataType: 'json', // what type of data do we expect back from the server
+                    encode: true,
+                    success: function (data) {
+                        if (data.success === true) {
+                            location.reload();
+                        } else {
+                            alert(data.message);
+                        }
+                    }
+                })
+            })
+        })
+    </script>
 </body>
 </html>

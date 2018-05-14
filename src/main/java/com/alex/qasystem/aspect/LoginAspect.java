@@ -1,6 +1,7 @@
 package com.alex.qasystem.aspect;
 
 import com.alex.qasystem.dto.UserAuthExecution;
+import com.alex.qasystem.entity.User;
 import com.alex.qasystem.service.UserService;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.AfterReturning;
@@ -21,10 +22,12 @@ public class LoginAspect {
 
     @AfterReturning(pointcut = "execution(* com.alex.qasystem.service.UserService.login(..)),",
             returning = "userAuthExecution")
-    public void updateReputation(JoinPoint joinPoint, UserAuthExecution userAuthExecution) {
-        if (userAuthExecution.getUser() != null) {
-            userService.updateReputation(userAuthExecution.getUser().getId());
+    public User updateReputation(JoinPoint joinPoint, UserAuthExecution userAuthExecution) {
+        if (userAuthExecution.getUser() == null) {
+            return null;
         }
+        userService.updateReputation(userAuthExecution.getUser().getId());
+        return userAuthExecution.getUser();
     }
 
 }

@@ -35,4 +35,9 @@ public interface MedalRecordMapper {
     @Select("SELECT * FROM medal_record WHERE user_id = #{userId} ")
     @ResultMap("medalRecordResult")
     List<MedalRecord> selectByUserId(@Param("userId") Integer userId);
+
+    @Select("SELECT * FROM medal_record WHERE user_id = #{userId} AND medal_id = #{medalId} limit 1")
+    @ResultMap("medalRecordResult")
+    MedalRecord selectByUserIdAndMedalId(@Param("userId") Integer userId, @Param("medalId") Integer medalId);
+
 }

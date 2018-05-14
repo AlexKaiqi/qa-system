@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head lang="en">
     <title th:text="${question.getTitle()}"></title>
-    <meta name="description" content="首页"/>
+    <meta name="description" th:content="${question.getTitle()}"/>
     <meta th:replace="fragments/snipplets:: head">
 </head>
 <body>
@@ -14,12 +14,14 @@
 <div class="container">
     <div class="row">
         <h2 th:text="${question.getTitle()}">Question Title</h2>
-        <a class="text-secondary question-bookmark-link" title="收藏" href="#">
-            <span class="oi oi-star" style="font-size: 2rem"></span>
-        </a>
-        <a class="text-secondary question-subscription-link" title="关注" href="#">
-            <span class="oi oi-eye" style="font-size: 2rem"></span>
-        </a>
+        <button class="add-question-bookmark btn btn-sm btn-outline-secondary mr-2"
+                th:attr="data-target-url=${'/questions/'+question.getId()+'/bookmark'}">
+            收藏
+        </button>
+        <button class="add-question-subscription btn btn-sm btn-outline-secondary"
+                th:attr="data-target-url=${'/questions/'+question.getId()+'/subscription'}">
+            关注
+        </button>
         <a href="/questions/ask" class="ml-auto">
             <button type="button" class="btn btn-lg btn-outline-success">提问</button>
         </a>
@@ -32,9 +34,10 @@
                     <div class="profile-info-card">
                         <img class="img-fluid" th:src="${question.getUser().getProfileImgSrc()}" src="#">
                         <span th:text="${question.getUser().getProfileName()}"></span>
-                        <a class="user-subscription-link text-secondary" title="关注" href="#">
-                            <span class="oi oi-eye" style="font-size: 1rem"></span>
-                        </a>
+                        <button class="add-user-subscription btn btn-sm btn-outline-secondary"
+                                th:attr="data-target-url=${'/users/'+question.getUserId()+'/subscription'}">
+                            关注
+                        </button>
                         <p th:text="${'reputations: '+question.getUser().getReputation()}"></p>
                     </div>
                     <form class="approval-form  d-inline-block"
@@ -157,9 +160,10 @@
                     <div class="profile-info-card">
                         <img class="img-fluid" th:src="${answer.getUser().getProfileImgSrc()}" src="#">
                         <span th:text="${answer.getUser().getProfileName()}"></span>
-                        <a class="user-subscription-link text-secondary" title="关注" href="#">
-                            <span class="oi oi-eye" style="font-size: 1rem"></span>
-                        </a>
+                        <button class="add-user-subscription btn btn-sm btn-outline-secondary"
+                                th:attr="data-target-url=${'/users/'+question.getUserId()+'/subscription'}">
+                            关注
+                        </button>
                         <p th:text="${'reputations: '+answer.getUser().getReputation()}"></p>
                     </div>
                     <form class="approval-form  d-inline-block"
@@ -211,7 +215,11 @@
                                             <button class="btn btn-primary" type="submit">保存修改</button>
                                             <button type="button" class="btn btn-secondary" data-dismiss="modal">取消
                                             </button>
+                                            <button class="delete-answer btn btn-sm btn-outline-danger float-right"
+                                                             th:attr="data-target-url=${'/questions/'+question.getId()+'/answers/'+answer.getId()}">删除回答
+                                            </button>
                                         </form>
+
                                     </div>
                                 </div>
                             </div>
@@ -237,7 +245,7 @@
                             <!-- 添加评论 -->
                             <li>
                                 <form class="comment-form" method="post"
-                                      th:action="@{${'questions/'+question.getId()+'/answers/'+answer.getId()+'/comment'}}">
+                                      th:action="@{${'/questions/'+question.getId()+'/answers/'+answer.getId()+'/comment'}}">
                                     <div class="row">
                                         <div class="col-11">
                                             <div class="comment-editor"
@@ -605,6 +613,58 @@
             event.preventDefault();
         })
     });
+
+    $('.delete-answer').each(function(i) {
+        $(this).click(function () {
+            if (!hasValidToken()) {
+                alert("请先登录");
+                localStorage.removeItem("token");
+                event.preventDefault();
+                location.replace('/user/sign-in');
+                return;
+            }
+            var url = $(this).data('target-url')+'?token='+localStorage.getItem('token');
+            $.ajax({
+                type: 'DELETE', // define the type of HTTP verb we want to use (POST for our form)
+                url: url, // the url where we want to POST
+                dataType: 'json', // what type of data do we expect back from the server
+                encode: true,
+                success: function (data) {
+                    if (data.success === true) {
+                        location.reload();
+                    } else {
+                        alert(data.message);
+                    }
+                }
+            })
+        })
+    })
+
+    $('.add-question-bookmark, .add-question-subscription, .add-user-subscription').each(function (i) {
+        $(this).click(function () {
+            if (!hasValidToken()) {
+                alert("请先登录");
+                localStorage.removeItem("token");
+                event.preventDefault();
+                location.replace('/user/sign-in');
+                return;
+            }
+            var url = $(this).data('target-url')+'?token='+localStorage.getItem('token');
+            $.ajax({
+                type: 'POST', // define the type of HTTP verb we want to use (POST for our form)
+                url: url, // the url where we want to POST
+                dataType: 'json', // what type of data do we expect back from the server
+                encode: true,
+                success: function (data) {
+                    if (data.success === true) {
+                        location.reload();
+                    } else {
+                        alert(data.message);
+                    }
+                }
+            })
+        })
+    })
 </script>
 </body>
 </html>

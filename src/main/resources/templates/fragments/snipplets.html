@@ -15,7 +15,7 @@
 
 <nav th:fragment="nav" class="navbar navbar-expand-md navbar-light bg-light mb-3">
     <div class="container">
-        <a class="navbar-brand" href="/">Q&A System</a>
+        <a class="navbar-brand" href="/">问答系统</a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExample04"
                 aria-controls="navbarsExample04" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
@@ -24,27 +24,24 @@
         <div class="collapse navbar-collapse" id="navbarsExample04">
             <ul class="navbar-nav mr-auto">
                 <li class="nav-item">
-                    <a class="nav-link" href="/questions/all">Questions</a>
+                    <a class="nav-link" href="/questions/all">所有问题</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="/questions/tagged">Tags</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="/users/stars">Users</a>
+                    <a class="nav-link" href="/questions/tagged">标签分类</a>
                 </li>
             </ul>
-            <form class="form-inline my-2 my-md-0 search-form">
-                <input class="form-control" type="text" placeholder="Search">
-            </form>
             <ul class="navbar-nav">
                 <li class="navbar-item">
                     <a class="nav-link nav-profile-name" href="#" hidden></a>
-                    <a class="nav-link nav-sign-in" href="/user/sign-in">sign-in</a>
+                    <a class="nav-link nav-sign-in" href="/user/sign-in">登录</a>
                 </li>
                 <li class="navbar-item">
-                    <a class="nav-link" href="#" onclick="signOff()">sign-off</a>
+                    <a class="nav-link" href="#" onclick="signOff()">注销</a>
                 </li>
             </ul>
+            <form class="form-inline my-2 my-md-0 search-form float-sm-left">
+                <input class="form-control" type="text" placeholder="搜索问题">
+            </form>
         </div>
     </div>
 </nav>
@@ -54,98 +51,98 @@
 </footer>
 
 <th:block th:fragment="script">
-<script src="/js/jquery-3.2.1.min.js" th:src="@{/js/jquery-3.2.1.min.js}"></script>
-<script src="/js/popper.min.js" th:src="@{/js/popper.min.js}"></script>
-<script src="/bootstrap-4.0.0-dist/js/bootstrap.min.js"
-        th:src="@{/bootstrap-4.0.0-dist/js/bootstrap.min.js}"></script>
-<script src="/quill/quill.js" th:src="@{/quill/quill.js}"></script>
-<script>
-/**
- * 检查token是否有效
- */
-function hasValidToken() {
-    var token = localStorage.getItem("token");
-    if (token === null) return false;
-    var formData = {token: token};
-    var data;
-    $.ajax({
-        type: 'GET', // define the type of HTTP verb we want to use (POST for our form)
-        url: '/token/check', // the url where we want to POST
-        data: formData, // our data object
-        dataType: 'json', // what type of data do we expect back from the server
-        encode: true,
-        async: false,
-        success: function(result) {
-            data = result;
-        }
-    });
-    return data.success === true;
-};
-
-/**
- * 判断登录状态, 替换登录标志
- */
-var $navProfileName = $('.nav-profile-name');
-
-if (localStorage.getItem('token') === null
-    || localStorage.getItem('PROFILE_NAME') === null
-    || localStorage.getItem('PROFILE_IMG_SRC') === null
-    || localStorage.getItem('EMAIL') === null) {
-    $navProfileName.attr('hidden', true);
-} else {
-    $navProfileName.attr('hidden', false);
-    $('.nav-sign-in').attr('hidden', true);
-    $navProfileName.text(localStorage.getItem('PROFILE_NAME'));
-    $navProfileName.attr('href', '/user/account?token=' + localStorage.getItem('token'));
-}
-
-/**
- * 登出
- */
-function signOff() {
-    var formData = {
-        token: localStorage.getItem('token')
-    };
-    localStorage.removeItem('token');
-    localStorage.removeItem('EMAIL');
-    localStorage.removeItem('PROFILE_NAME');
-    localStorage.removeItem('PROFILE_IMG_SRC');
-    location.reload();
-    /*        $.ajax({
-                type: 'POST', // define the type of HTTP verb we want to use (POST for our form)
-                url: '/user/sign-off', // the url where we want to POST
+    <script src="/js/jquery-3.2.1.min.js" th:src="@{/js/jquery-3.2.1.min.js}"></script>
+    <script src="/js/popper.min.js" th:src="@{/js/popper.min.js}"></script>
+    <script src="/bootstrap-4.0.0-dist/js/bootstrap.min.js"
+            th:src="@{/bootstrap-4.0.0-dist/js/bootstrap.min.js}"></script>
+    <script src="/quill/quill.js" th:src="@{/quill/quill.js}"></script>
+    <script>
+        /**
+         * 检查token是否有效
+         */
+        function hasValidToken() {
+            var token = localStorage.getItem("token");
+            if (token === null) return false;
+            var formData = {token: token};
+            var data;
+            $.ajax({
+                type: 'GET', // define the type of HTTP verb we want to use (POST for our form)
+                url: '/token/check', // the url where we want to POST
                 data: formData, // our data object
                 dataType: 'json', // what type of data do we expect back from the server
                 encode: true,
-                success: function(data) {
-                    if (data.success === true) {
-
-                    } else {
-                        alert(data.message);
-                    }
+                async: false,
+                success: function (result) {
+                    data = result;
                 }
-            });*/
-}
+            });
+            return data.success === true;
+        };
 
-$('.search-form').submit(function(event) {
-    var text = $(this).children('input').val();
-    if(text.length > 100) {
-        alert("请输入合法内容");
-        event.preventDefault();
-    }
-    var tagRegex = /(\[\w+] ?)+/;
-    var url;
-    if (text.match(tagRegex)) {
-        text = text.substr(1, text.length-2);
-        var tags = text.replace(/] ?\[/g, '+');
-        url = '/questions/tagged/'+tags;
-    } else {
-        url = '/questions/search?keywords='+text;
-    }
-    location.replace(url);
-    event.preventDefault();
-});
-</script>
+        /**
+         * 判断登录状态, 替换登录标志
+         */
+        var $navProfileName = $('.nav-profile-name');
+
+        if (localStorage.getItem('token') === null
+            || localStorage.getItem('PROFILE_NAME') === null
+            || localStorage.getItem('PROFILE_IMG_SRC') === null
+            || localStorage.getItem('EMAIL') === null) {
+            $navProfileName.attr('hidden', true);
+        } else {
+            $navProfileName.attr('hidden', false);
+            $('.nav-sign-in').attr('hidden', true);
+            $navProfileName.text(localStorage.getItem('PROFILE_NAME'));
+            $navProfileName.attr('href', '/user/account?token=' + localStorage.getItem('token'));
+        }
+
+        /**
+         * 登出
+         */
+        function signOff() {
+            var formData = {
+                token: localStorage.getItem('token')
+            };
+            localStorage.removeItem('token');
+            localStorage.removeItem('EMAIL');
+            localStorage.removeItem('PROFILE_NAME');
+            localStorage.removeItem('PROFILE_IMG_SRC');
+            location.reload();
+            /*        $.ajax({
+                        type: 'POST', // define the type of HTTP verb we want to use (POST for our form)
+                        url: '/user/sign-off', // the url where we want to POST
+                        data: formData, // our data object
+                        dataType: 'json', // what type of data do we expect back from the server
+                        encode: true,
+                        success: function(data) {
+                            if (data.success === true) {
+
+                            } else {
+                                alert(data.message);
+                            }
+                        }
+                    });*/
+        }
+
+        $('.search-form').submit(function (event) {
+            var text = $(this).children('input').val();
+            if (text.length > 100) {
+                alert("请输入合法内容");
+                event.preventDefault();
+            }
+            var tagRegex = /(\[\w+] ?)+/;
+            var url;
+            if (text.match(tagRegex)) {
+                text = text.substr(1, text.length - 2);
+                var tags = text.replace(/] ?\[/g, '+');
+                url = '/questions/tagged/' + tags;
+            } else {
+                url = '/questions/search?keywords=' + text;
+            }
+            location.replace(url);
+            event.preventDefault();
+        });
+    </script>
 </th:block>
 </body>
 </html>

@@ -13,9 +13,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Controller
@@ -29,6 +27,7 @@ public class ViewController {
     private TagMapper tagMapper;
     private QuestionMapper questionMapper;
     private AnswerMapper answerMapper;
+    private MedalService medalService;
 
     @Autowired
     public void setQuestionMapper(QuestionMapper questionMapper) {
@@ -73,6 +72,11 @@ public class ViewController {
     @Autowired
     public void setMessageService(MessageService messageService) {
         this.messageService = messageService;
+    }
+
+    @Autowired
+    public void setMedalService(MedalService medalService) {
+        this.medalService = medalService;
     }
 
     @GetMapping("/questions/tagged/{tags}")
@@ -146,13 +150,18 @@ public class ViewController {
             return "login";
         }
         List<Message> messages = messageService.getMessagesByReceiverId(user.getId());
-        List<Message> unreadMessages = messages.stream().filter(x->!x.isActive()).collect(Collectors.toList());
-        List<Message> readMessages = messages.stream().filter(Message::isActive).collect(Collectors.toList());
+        List<Message> unreadMessages = messages.stream().filter(x->x.getStatus() == 0).collect(Collectors.toList());
+        List<Message> readMessages = messages.stream().filter(x->x.getStatus() == 1).collect(Collectors.toList());
         List<Question> subscribedQuestions = questionSubscriptionService.getSubscribedQuestionsByUserId(user.getId());
         List<User> subscribedUsers = userSubscriptionService.getSubscribedUserByUserId(user.getId());
         List<Question> bookmarks = bookmarkService.selectBookmarkedQuestionByUserId(user.getId());
         List<Question> myQuestions = questionMapper.selectByUserId(user.getId());
         List<Answer> myAnswers = answerMapper.selectByUserId(user.getId());
+        Map<Integer, Question> questionMap = new HashMap<>(myAnswers.size());
+        for(Answer a: myAnswers) {
+            questionMap.put(a.getQuestionId(), questionService.getQuestionById(a.getQuestionId()));
+        }
+        List<MedalRecord> medalRecords = medalService.getMedalsByUserId(user.getId());
         modelMap.addAttribute("user", user);
         modelMap.addAttribute("messages", messages);
         modelMap.addAttribute("unreadMessages", unreadMessages);
@@ -162,6 +171,8 @@ public class ViewController {
         modelMap.addAttribute("bookmarks", bookmarks);
         modelMap.addAttribute("myQuestions", myQuestions);
         modelMap.addAttribute("myAnswers", myAnswers);
+        modelMap.addAttribute("medalRecords", medalRecords);
+        modelMap.addAttribute("questionMap", questionMap);
         return "account";
     }
 

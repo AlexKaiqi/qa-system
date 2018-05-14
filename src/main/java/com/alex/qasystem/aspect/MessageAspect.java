@@ -1,6 +1,7 @@
 package com.alex.qasystem.aspect;
 
 import com.alex.qasystem.entity.Answer;
+import com.alex.qasystem.entity.MedalRecord;
 import com.alex.qasystem.entity.Question;
 import com.alex.qasystem.service.MessageService;
 import org.aspectj.lang.JoinPoint;
@@ -35,6 +36,12 @@ public class MessageAspect {
             returning = "question")
     public void addUserPostNewAnswerMessage(JoinPoint joinPoint, Question question) {
         messageService.addUserPostNewQuestionMessage(question);
+    }
+
+    @AfterReturning(pointcut = "execution(* com.alex.qasystem.service.MedalService.award*(..))",
+            returning = "medalRecord")
+    public void addNewMedalRecordMessage(JoinPoint joinPoint, MedalRecord medalRecord) {
+        messageService.addNewMedalMessage(medalRecord);
     }
 
 }

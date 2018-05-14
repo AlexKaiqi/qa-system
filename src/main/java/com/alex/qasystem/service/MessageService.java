@@ -1,9 +1,6 @@
 package com.alex.qasystem.service;
 
-import com.alex.qasystem.entity.Answer;
-import com.alex.qasystem.entity.Message;
-import com.alex.qasystem.entity.Question;
-import com.alex.qasystem.entity.User;
+import com.alex.qasystem.entity.*;
 import org.apache.ibatis.javassist.NotFoundException;
 
 import javax.security.auth.message.AuthException;
@@ -20,5 +17,7 @@ public interface MessageService {
     List<Message> addQuestionHasNewAnswerMessage(Answer answer);
 
     List<Message> addUserPostNewAnswerMessage(Answer answer);
+
+    Message addNewMedalMessage(MedalRecord medalRecord);
 
 }

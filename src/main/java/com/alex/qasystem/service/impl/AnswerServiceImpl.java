@@ -87,7 +87,7 @@ public class AnswerServiceImpl implements AnswerService {
         if (answer == null) {
             throw new NotFoundException("回答不存在, answerId: " + answerId);
         }
-        if (!answer.getUserId().equals(userId) && !user.isAdmin()) {
+        if (!answer.getUserId().equals(userId) && user.getGroupId() != 1) {
             throw new AuthException("没有修改回答的权限, userId: " + userId);
         }
         answer.setId(answerId);
@@ -104,7 +104,7 @@ public class AnswerServiceImpl implements AnswerService {
         if (answer == null) {
             throw new NotFoundException("回答不存在, answerId: " + answerId);
         }
-        if (!answer.getUserId().equals(userId) && !user.isAdmin()) {
+        if (!answer.getUserId().equals(userId) && user.getGroupId() != 1) {
             throw new AuthException("没有修改回答的权限, userId: " + userId);
         }
         answerCommentMapper.deleteByAnswerId(answerId);
@@ -121,7 +121,7 @@ public class AnswerServiceImpl implements AnswerService {
         if (answerComment == null) {
             throw new NotFoundException("评论不存在, answerCommentId: " + answerCommentId);
         }
-        if (!answerComment.getUserId().equals(userId) && !user.isAdmin()) {
+        if (!answerComment.getUserId().equals(userId) && user.getGroupId() != 1) {
             throw new AuthException("没有删除评论的权限, userId: " + userId);
         }
         answerCommentMapper.deleteById(answerCommentId);

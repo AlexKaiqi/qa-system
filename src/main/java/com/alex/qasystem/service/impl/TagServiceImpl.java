@@ -35,7 +35,7 @@ public class TagServiceImpl implements TagService {
         if (tag == null) {
             throw new NotFoundException("找不到该标签. tagId: " + tagId);
         }
-        if (!user.isAdmin()) {
+        if (user.getGroupId() != 1) {
             throw new AuthException("没有更新标签描述的权限");
         }
         tag.setId(tagId);

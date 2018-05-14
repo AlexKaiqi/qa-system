@@ -136,7 +136,7 @@ public class QuestionServiceImpl implements QuestionService {
         if (question == null) {
             throw new NotFoundException("问题不存在, questionId: " + questionId);
         }
-        if (!question.getUserId().equals(userId) && !user.isAdmin()) {
+        if (!question.getUserId().equals(userId) && user.getGroupId() != 1) {
             throw new AuthException("没有修改问题的权限, userId: " + userId);
         }
         question.setId(questionId);
@@ -177,7 +177,7 @@ public class QuestionServiceImpl implements QuestionService {
         if (question == null) {
             throw new NotFoundException("问题不存在, questionId: " + questionId);
         }
-        if (!question.getUserId().equals(userId) && !user.isAdmin()) {
+        if (!question.getUserId().equals(userId) && user.getGroupId() != 1) {
             throw new AuthException("没有修改问题的权限, userId: " + userId);
         }
         question.setStatus(1);
@@ -193,7 +193,7 @@ public class QuestionServiceImpl implements QuestionService {
         if (questionComment == null) {
             throw new NotFoundException("评论不存在, questionCommentId: " + questionCommentId);
         }
-        if (!questionComment.getUserId().equals(userId) && !user.isAdmin()) {
+        if (!questionComment.getUserId().equals(userId) && user.getGroupId() != 1) {
             throw new AuthException("没有删除评论的权限, userId: " + userId);
         }
         questionCommentMapper.deleteById(questionCommentId);
