@@ -13,23 +13,26 @@
     <div class="card text-center p-0">
         <div class="card-body p-0">
             <div style="background-image: url('https://steamcdn-a.akamaihd.net/steamcommunity/public/images/items/441870/72cd26e14b7fcba028206a06f10548c0d5174cfc.jpg')">
-                <img class="rounded-circle card-img-top mx-auto" th:src="@{${user.getProfileImgSrc()}}"
+                <img class="avatar-img rounded-circle card-img-top mx-auto" th:src="@{${user.getProfileImgSrc()}}"
                      style="width: 100px; height: auto">
                 <h3 class="card-title">
                     <span class="card-title text-light" th:text="${user.getProfileName()+': '}">Profile Name</span>
                     <span class="card-text text-light" th:text="${user.getReputation()}"></span>
                 </h3>
-
             </div>
         </div>
 
         <div class="accordion" id="infoGroup">
-            <div class="btn-group d-flex">
+            <div class="btn-group btn-group-sm d-flex">
                 <button type="button" class="btn btn-secondary w-100" data-toggle="collapse" data-target="#messages"
                         data-parent="#infoGroup">
                     消息
                     <span class="badge badge-pill badge-danger " th:text="${messages.size()}"
                           th:if="${messages.size()>0}"></span>
+                </button>
+                <button type="button" class="btn btn-secondary w-100" data-toggle="collapse" data-target="#profileInfo"
+                        data-parent="#infoGroup">
+                    个人信息
                 </button>
                 <button type="button" class="btn btn-secondary w-100" data-toggle="collapse" data-target="#bookmarks"
                         data-parent="#infoGroup">
@@ -66,6 +69,86 @@
             </div>
 
             <div class="accordion-group text-left">
+                <!-- 个人信息 -->
+                <div class="collapse" id="profileInfo">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="card-text">
+                                <form id="uploadProfileImg" method="POST" enctype="multipart/form-data"
+                                      th:action="${'/users/'+user.getId()}">
+                                    <img class="avatar-img rounded-circle card-img-top mx-auto"
+                                         th:src="@{${user.getProfileImgSrc()}}"
+                                         style="width: 100px; height: auto">
+                                    <div class="form-group">
+                                        <label class="btn btn-sm btn-outline-secondary" style="margin-bottom: -1rem">
+                                            选择头像<input name="profileImg" class="upload-avatar" type="file"
+                                                       id="profileImgInput"
+                                                       accept="image/*"
+                                                       th:attr="data-target-url=${'/users/'+user.getId()}" hidden/>
+                                        </label>
+                                        <button class="btn btn-sm btn-outline-success mt-3" type="submit">确定</button>
+                                    </div>
+                                </form>
+                                <div class="form-group row">
+                                    <label for="inputProfileName" class="col-sm-2 col-form-label">昵称</label>
+                                    <div class="col-sm-10">
+                                        <input type="text" class="form-control-plaintext" id="inputProfileName"
+                                               th:value="${user.getProfileName()}">
+                                    </div>
+                                </div>
+
+                                <div class="form-group row">
+                                    <label for="inputEmail" class="col-sm-2 col-form-label">邮箱</label>
+                                    <div class="col-sm-10">
+                                        <input type="email" readonly class="form-control-plaintext" id="inputEmail"
+                                               th:value="${user.getEmail()}">
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label for="staticReputation" class="col-sm-2 col-form-label">名誉</label>
+                                    <div class="col-sm-10">
+                                        <input type="email" readonly class="form-control-plaintext"
+                                               id="staticReputation"
+                                               th:value="${user.getReputation()}">
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label for="staticRegisterTime" class="col-sm-2 col-form-label">注册时间</label>
+                                    <div class="col-sm-10">
+                                        <input type="text" readonly class="form-control-plaintext"
+                                               id="staticRegisterTime"
+                                               th:value="${user.getRegisterTime()}">
+                                    </div>
+                                </div>
+
+                                <div class="">
+                                    <button class="btn btn-sm btn-outline-secondary" data-toggle="collapse"
+                                            data-target="#changePwd">修改密码
+                                    </button>
+                                </div>
+                                <div class="collapse" id="changePwd">
+                                    <form id="changePassword" th:action="${'/users/'+user.getId()}">
+                                        <div class="form-row">
+                                            <div class="form-group">
+                                                <label>旧密码
+                                                    <input name="oldPassword" placeholder="旧密码" class="form-control"
+                                                           type="password">
+                                                </label>
+                                            </div>
+                                            <div class="form-group">
+                                                <label>新密码
+                                                    <input name="newPassword" placeholder="新密码" class="form-control"
+                                                           type="password">
+                                                </label>
+                                            </div>
+                                        </div>
+                                        <button class="btn btn-sm btn-outline-secondary" type="submit">确认</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
                 <!-- 消息 -->
                 <div class="collapse show" id="messages">
                     <ul class="list-group">
@@ -73,16 +156,18 @@
                             th:each="m: ${messages}">
                             <span th:utext="${m.getContent()}"></span>
                             <button class="delete-message btn btn-sm btn-outline-secondary float-right"
-                                    th:attr="data-target-url=${'/messages/'+m.getId()}">删除</button>
+                                    th:attr="data-target-url=${'/messages/'+m.getId()}">删除
+                            </button>
+                            <span class="float-right text-secondary mr-4" th:text="${m.getSendTime()}"></span>
                         </li>
                     </ul>
-
                 </div>
                 <!--奖章-->
                 <div class="collapse" id="myMedals">
                     <div class="card-columns">
                         <div th:each="m: ${medalRecords}" class="card">
-                            <img class="card-img-top w-25 mx-auto" th:src="${m.getMedal().getIconSrc()}" src="icon">
+                            <img class="card-img-top w-25 mx-auto" th:src="${m.getMedal().getIconSrc()}"
+                                 src="icon">
                             <div class="card-body">
                                 <h5 th:text="${m.getMedal().getTitle()}" class="card-title text-info"></h5>
                                 <div th:text="${m.getMedal().getDescription()}" class="card-text"></div>
@@ -100,7 +185,8 @@
                                th:href="${'/questions/'+q.getId()+'/'+q.getTitle()}">
                             </a>
                             <button class="delete-bookmark btn btn-sm btn-outline-secondary float-right"
-                                    th:attr="data-target-url=${'/questions/'+q.getId()+'/bookmark'}">取消收藏</button>
+                                    th:attr="data-target-url=${'/questions/'+q.getId()+'/bookmark'}">取消收藏
+                            </button>
                         </li>
                     </ul>
                 </div>
@@ -114,7 +200,8 @@
                             </a>
                             <span class="oi oi-thumb-up" th:text="${q.getApprovals()}"></span>
                             <button class="delete-question-subscription btn btn-sm btn-outline-secondary float-right"
-                                    th:attr="data-target-url=${'/questions/'+q.getId()+'/subscription'}">取消关注</button>
+                                    th:attr="data-target-url=${'/questions/'+q.getId()+'/subscription'}">取消关注
+                            </button>
                         </li>
                     </ul>
                 </div>
@@ -142,6 +229,7 @@
                             </a>
                             <span th:text="${q.getAnswers().size()+'回答'}"></span>
                             <span class="oi oi-thumb-up" th:text="${q.getApprovals()}"></span>
+                            <span class="text-secondary float-right" th:text="${q.getCreateTime()}"></span>
                         </li>
                     </ul>
                 </div>
@@ -150,9 +238,11 @@
                     <ul class="list-group">
                         <li class="list-group-item"
                             th:each="a: ${myAnswers}" th:with="q=${questionMap.get(a.getQuestionId())}">
-                            <a th:text="${q.getTitle()}" th:href="${'/questions/'+q.getId()+'/'+q.getTitle()}"></a>
+                            <a th:text="${q.getTitle()}"
+                               th:href="${'/questions/'+q.getId()+'/'+q.getTitle()}"></a>
                             <span th:text="${a.getAnswerComments().size()+'评论'}"></span>
                             <span class="oi oi-thumb-up" th:text="${q.getApprovals()}"></span>
+                            <span class="text-secondary float-right" th:text="${a.getCreateTime()}"></span>
                         </li>
                     </ul>
                 </div>
@@ -175,11 +265,10 @@
                 if (!hasValidToken()) {
                     alert("请先登录");
                     localStorage.removeItem("token");
-                    event.preventDefault();
                     location.replace('/user/sign-in');
                     return;
                 }
-                var url = $(this).data('target-url')+'?token='+localStorage.getItem('token');
+                var url = $(this).data('target-url') + '?token=' + localStorage.getItem('token');
                 $.ajax({
                     type: 'DELETE', // define the type of HTTP verb we want to use (POST for our form)
                     url: url, // the url where we want to POST
@@ -187,14 +276,83 @@
                     encode: true,
                     success: function (data) {
                         if (data.success === true) {
-                            location.reload();
+                            alert("删除成功");
+                            $(this).hide();
+                            $(this).parent().hide();
                         } else {
                             alert(data.message);
                         }
                     }
                 })
             })
-        })
+        });
+        $('#changePassword').submit(function (event) {
+            if (!hasValidToken()) {
+                alert("请先登录");
+                localStorage.removeItem("token");
+                event.preventDefault();
+                location.replace('/user/sign-in');
+                return;
+            }
+            var url = $(this).attr('action');
+            var formData = {
+                token: localStorage.getItem('token'),
+                oldPassword: $(this).find("input[name='oldPassword']").val(),
+                newPassword: $(this).find("input[name='newPassword']").val()
+            };
+            $.ajax({
+                type: 'PUT', // define the type of HTTP verb we want to use (POST for our form)
+                url: url, // the url where we want to POST
+                data: formData,
+                dataType: 'json', // what type of data do we expect back from the server
+                encode: true,
+                success: function (data) {
+                    if (data.success === true) {
+                        alert("密码修改成功");
+                        location.reload();
+                    } else {
+                        alert(data.message);
+                    }
+                }
+            });
+            event.preventDefault();
+        });
+        $('#profileImgInput').change(
+            function () {
+                if (this.files && this.files[0]) {
+                    var reader = new FileReader();
+                    reader.onload = function (e) {
+                        $('#uploadProfileImg').find("img").attr('src', e.target.result);
+                    };
+                    reader.readAsDataURL(this.files[0]);
+                }
+            }
+        );
+        $('#uploadProfileImg').submit(function(event) {
+            var input = $('#profileImgInput')[0];
+            if(!input.files || !input.files[0]) {
+                e.preventDefault();
+                return;
+            }
+            var formData = new FormData();
+            formData.append('profileImg', input.files[0]);
+            formData.append('token', localStorage.getItem('token'));
+            $.ajax({
+                url : $(this).attr('action'),
+                type : 'POST',
+                data : formData,
+                processData: false,  // tell jQuery not to process the data
+                contentType: false,  // tell jQuery not to set contentType
+                success : function(data) {
+                    if (data.success) {
+                        location.reload();
+                    } else {
+                        alert(data.message);
+                    }
+                }
+            });
+            event.preventDefault();
+        });
     </script>
 </body>
 </html>

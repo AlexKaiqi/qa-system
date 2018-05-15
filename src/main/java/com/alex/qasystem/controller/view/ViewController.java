@@ -79,6 +79,12 @@ public class ViewController {
         this.medalService = medalService;
     }
 
+    @GetMapping("/")
+    public String indexPage(ModelMap modelMap) {
+        modelMap.addAttribute("questions", questionService.queryQuestionByTitleRegexp(".*"));
+        return "questions";
+    }
+
     @GetMapping("/questions/tagged/{tags}")
     public String queryQuestionsByTags(@PathVariable String tags,
                                        ModelMap modelMap) {

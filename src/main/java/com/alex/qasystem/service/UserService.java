@@ -4,8 +4,11 @@ import com.alex.qasystem.dto.UserAuthExecution;
 import com.alex.qasystem.dto.UserRegistrationExecution;
 import com.alex.qasystem.entity.User;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.commons.CommonsMultipartFile;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.Map;
 
 @Service
@@ -21,9 +24,9 @@ public interface UserService {
 
     void updateReputation(Integer userId);
 
-    User updateProfileImg(User user, CommonsMultipartFile profileImg);
+    void updateProfileImg(User user, MultipartFile profileImg) throws IOException;
 
-    Map<String, Object> changePassword(User user, String password, String oldPassword);
+    Map<String, Object> changePassword(User user, String oldPassword, String newPassword);
 
 
 }

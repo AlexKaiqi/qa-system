@@ -2,22 +2,16 @@ package com.alex.qasystem.controller;
 
 import com.alex.qasystem.dto.UserAuthExecution;
 import com.alex.qasystem.dto.UserRegistrationExecution;
-import com.alex.qasystem.entity.Bookmark;
 import com.alex.qasystem.entity.User;
-import com.alex.qasystem.entity.UserSubscription;
-import com.alex.qasystem.service.*;
+import com.alex.qasystem.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
-@Controller
+@RestController
 public class UserController {
     private UserService userService;
 
@@ -27,7 +21,6 @@ public class UserController {
     }
 
     @GetMapping("/token/check")
-    @ResponseBody
     public Map<String, Object> authToken(@RequestParam String token) {
         User user = userService.getUserIdByToken(token);
         Map<String, Object> map = new HashMap<>(2);
@@ -40,22 +33,56 @@ public class UserController {
     }
 
     @PostMapping("user/sign-in")
-    @ResponseBody
     public UserAuthExecution signIn(@RequestParam String email, @RequestParam String password) {
         return userService.login(email, password);
     }
 
     @PostMapping("/user/sign-up")
-    @ResponseBody
     public UserRegistrationExecution signUp(@RequestParam String email,
                                             @RequestParam String profileName,
                                             @RequestParam String password) {
         return userService.register(email, profileName, password);
     }
 
-    @PostMapping("/messages/userId")
-    @ResponseBody Map<String, Object> readMessages() {
-        return null;
+    @PostMapping("/users/{userId}")
+    public Map<String, Object> uploadProfileImg(@PathVariable Integer userId,
+                                                @RequestParam MultipartFile profileImg,
+                                                @RequestParam String token) {
+        User user = userService.getUserIdByToken(token);
+        Map<String, Object> map = new HashMap<>(2);
+        if (user == null) {
+            map.put("success", false);
+            map.put("message", "需要验证身份");
+            return map;
+        }
+        try {
+            userService.updateProfileImg(user, profileImg);
+        } catch (Exception e) {
+            map.put("success", false);
+            map.put("message", "上传失败");
+        }
+        map.put("success", true);
+        return map;
     }
 
+    @PutMapping("/users/{userId}")
+    public Map<String, Object> changePwd(@PathVariable Integer userId,
+                                         @RequestParam String oldPassword,
+                                         @RequestParam String newPassword,
+                                         @RequestParam String token) {
+        Map<String, Object> map = new HashMap<>(2);
+        User user = userService.getUserIdByToken(token);
+        if (user == null) {
+            map.put("success", false);
+            map.put("message", "需要验证身份");
+            return map;
+        }
+        try {
+            map = userService.changePassword(user, oldPassword, newPassword);
+        } catch (Exception e) {
+            map.put("success", false);
+            map.put("message", "操作失败");
+        }
+        return map;
+    }
 }

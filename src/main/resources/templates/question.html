@@ -14,6 +14,7 @@
 <div class="container">
     <div class="row">
         <h2 th:text="${question.getTitle()}">Question Title</h2>
+        <span th:if="${question.getStatus()==1}">closed</span>
         <button class="add-question-bookmark btn btn-sm btn-outline-secondary mr-2"
                 th:attr="data-target-url=${'/questions/'+question.getId()+'/bookmark'}">
             收藏
@@ -266,7 +267,7 @@
                 </div>
             </div>
 
-            <form class="answer-form" th:action="@{${'/questions/'+question.getId()+'/answer'}}">
+            <form class="answer-form" th:action="@{${'/questions/'+question.getId()+'/answer'}}" th:if="${question.getStatus()!=2}">
                 <div class="form-group">
                     <label for="answer-content">添加回答</label>
                     <input name="answer-content" id="answer-content" type="hidden">

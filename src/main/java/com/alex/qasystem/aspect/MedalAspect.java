@@ -79,7 +79,7 @@ public class MedalAspect {
         if (answer == null ) { return null; }
         List<Answer> answers = answerMapper.selectByUserId(answer.getUserId());
         if (answers.size() >= 10 && medalRecordMapper.selectByUserIdAndMedalId(answer.getUserId(), 3) == null) {
-            return medalService.awardOneHundreadReputationMedal(answer.getUserId());
+            return medalService.awardWillingToHelpMedal(answer.getUserId());
         }
         return null;
     }

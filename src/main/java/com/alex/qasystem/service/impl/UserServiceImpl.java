@@ -17,8 +17,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.commons.CommonsMultipartFile;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -199,23 +204,25 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User updateProfileImg(User user, CommonsMultipartFile profileImg) {
-        //TODO
-        String imageBasePath = "src/resources/static/images/";
-        String fileName = user.getId() + profileImg.getContentType();
-        String profileImgSrc = "images/avatars/" + fileName;
-        return null;
+    public void updateProfileImg(User user, MultipartFile profileImg) throws IOException {
+        String imageBasePath = "C:\\Users\\Alex\\Documents\\workspace\\qa-system\\src\\main\\resources\\static\\images\\avatars\\";
+        String contentType = profileImg.getContentType().split("/")[1];
+        File file = new File(imageBasePath + user.getId()+"."+contentType);
+        profileImg.transferTo(file);
+        user.setId(user.getId());
+        user.setProfileImgSrc("/images/avatars/"+file.getName());
+        userMapper.updateById(user);
     }
 
     @Override
-    public Map<String, Object> changePassword(User user, String newPassword, String oldPassword) {
+    public Map<String, Object> changePassword(User user, String oldPassword, String newPassword) {
         Map<String, Object> map = new HashMap<>(2);
-        if (!SecurityUtil.checkpw(oldPassword, user.getPassword())) {
-            map.put("success", false);
-            map.put("message", "密码不正确");
-        } else if (!ValidationUtil.isValidPassword(newPassword)) {
+        if (!ValidationUtil.isValidPassword(newPassword)) {
             map.put("success", false);
             map.put("message", "新密码不合法");
+        } else if (!SecurityUtil.checkpw(oldPassword, user.getPassword())) {
+            map.put("success", false);
+            map.put("message", "密码不正确");
         } else {
             user.setPassword(SecurityUtil.hashpw(newPassword));
             userMapper.updateById(user);

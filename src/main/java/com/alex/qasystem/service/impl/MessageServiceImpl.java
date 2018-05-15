@@ -81,7 +81,7 @@ public class MessageServiceImpl implements MessageService {
             Message message = new Message();
             message.setType(0);
             message.setReceiverId(s.getUserId());
-            message.setContent("<a class='nav-link' href='/questions/" + question.getId() + "/" + question.getTitle() + "'>你关注的用户: " + user.getProfileName() + " 有了新回答</a>");
+            message.setContent("<a  href='/questions/" + question.getId() + "/" + question.getTitle() + "'>你关注的用户: " + user.getProfileName() + " 有了新回答</a>");
             message.setStatus(0);
             message.setSendTime(new Date());
             messages.add(message);
