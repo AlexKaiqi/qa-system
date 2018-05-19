@@ -27,7 +27,7 @@ public class ScheduledTasks {
         this.authTokenMapper = authTokenMapper;
     }
 
-    @Scheduled(fixedRate = 1600000, initialDelay = 1600000)
+    @Scheduled(fixedRate = 1600000, initialDelay = 100000)
     public void removeExpiredToken() {
         Integer count = authTokenMapper.deleteExpiredToken();
         log.info("Scheduled Task: delete {} rows of expired token {}", count, DATE_FORMAT.format(new Date()));

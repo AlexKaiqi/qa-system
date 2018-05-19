@@ -12,7 +12,7 @@ public interface TagService {
 
     Tag getTagById(Integer id);
 
-    Tag updateDescription(User user, Integer id, String description) throws NotFoundException, AuthException;
+    Tag updateDescription(User user, Integer id, String title, String description) throws NotFoundException, AuthException;
 
     Tag addTag(User user, String title, String description);
 

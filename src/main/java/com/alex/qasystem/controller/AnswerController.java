@@ -167,13 +167,9 @@ public class AnswerController {
         }
         try {
             answerService.deleteAnswer(user, answerId);
-        } catch (NotFoundException | AuthException e) {
+        }  catch (Exception e) {
             map.put("success", false);
             map.put("message", e.getMessage());
-            return map;
-        } catch (Exception e) {
-            map.put("success", false);
-            map.put("message", "²Ù×÷Ê§°Ü");
             return map;
         }
         map.put("success", true);

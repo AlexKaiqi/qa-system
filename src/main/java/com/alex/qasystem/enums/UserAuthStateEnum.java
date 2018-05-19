@@ -15,10 +15,10 @@ public enum UserAuthStateEnum {
     SUCCESS(0, "身份验证成功"),
     ALREADY_LOGGED_IN(1, "用户已经处于登录状态了"),
     WRONG_PASSWORD(-1, "帐号密码不匹配"),
-    USER_NOT_EXISTS(-1001, "该邮箱尚未注册"),
-    TOKEN_NOT_EXISTS_OR_EXPIRED(-1002, "token不存在或已经过期"),
-    NULL_AUTH_INFO(-1003, "缺少身份验证信息"),
-    INVALID_LOGIN_PARAMETERS(-1003, "登录信息不合法");
+    USER_NOT_EXISTS(-1003, "该邮箱尚未注册"),
+    TOKEN_NOT_EXISTS_OR_EXPIRED(-1004, "token不存在或已经过期"),
+    NULL_AUTH_INFO(-1005, "缺少身份验证信息"),
+    INVALID_LOGIN_PARAMETERS(-1006, "登录信息不合法");
 
     private int state;
 

@@ -16,11 +16,11 @@
         <h2 th:text="${question.getTitle()}">Question Title</h2>
         <span th:if="${question.getStatus()==1}">closed</span>
         <button class="add-question-bookmark btn btn-sm btn-outline-secondary mr-2"
-                th:attr="data-target-url=${'/questions/'+question.getId()+'/bookmark'}">
+                th:attr="data-target-url=${'/users/0/bookmarks/'+question.getId()}">
             收藏
         </button>
         <button class="add-question-subscription btn btn-sm btn-outline-secondary"
-                th:attr="data-target-url=${'/questions/'+question.getId()+'/subscription'}">
+                th:attr="data-target-url=${'/users/0/question-subscriptions/'+question.getId()}">
             关注
         </button>
         <a href="/questions/ask" class="ml-auto">
@@ -36,7 +36,7 @@
                         <img class="img-fluid" th:src="${question.getUser().getProfileImgSrc()}" src="#">
                         <span th:text="${question.getUser().getProfileName()}"></span>
                         <button class="add-user-subscription btn btn-sm btn-outline-secondary"
-                                th:attr="data-target-url=${'/users/'+question.getUserId()+'/subscription'}">
+                                th:attr="data-target-url=${'/users/0/user-subscriptions/'+question.getUserId()}">
                             关注
                         </button>
                         <p th:text="${'reputations: '+question.getUser().getReputation()}"></p>
@@ -162,7 +162,7 @@
                         <img class="img-fluid" th:src="${answer.getUser().getProfileImgSrc()}" src="#">
                         <span th:text="${answer.getUser().getProfileName()}"></span>
                         <button class="add-user-subscription btn btn-sm btn-outline-secondary"
-                                th:attr="data-target-url=${'/users/'+question.getUserId()+'/subscription'}">
+                                th:attr="data-target-url=${'/users/0/user-subscriptions/'+answer.getUserId()}">
                             关注
                         </button>
                         <p th:text="${'reputations: '+answer.getUser().getReputation()}"></p>
@@ -216,10 +216,10 @@
                                             <button class="btn btn-primary" type="submit">保存修改</button>
                                             <button type="button" class="btn btn-secondary" data-dismiss="modal">取消
                                             </button>
-                                            <button class="delete-answer btn btn-sm btn-outline-danger float-right"
-                                                             th:attr="data-target-url=${'/questions/'+question.getId()+'/answers/'+answer.getId()}">删除回答
-                                            </button>
-                                        </form>
+
+                                        </form><button class="delete-answer btn btn-sm btn-outline-danger float-right"
+                                                       th:attr="data-target-url=${'/questions/'+question.getId()+'/answers/'+answer.getId()}">删除回答
+                                    </button>
 
                                     </div>
                                 </div>
@@ -273,7 +273,7 @@
                     <input name="answer-content" id="answer-content" type="hidden">
                     <div id="answer-editor" style="height: 130px;"></div>
                 </div>
-                <button class="btn btn-primary" type="submit">Save Profile</button>
+                <button class="btn btn-primary" type="submit">保存</button>
             </form>
 
         </div>
@@ -639,7 +639,7 @@
                 }
             })
         })
-    })
+    });
 
     $('.add-question-bookmark, .add-question-subscription, .add-user-subscription').each(function (i) {
         $(this).click(function () {
@@ -658,7 +658,7 @@
                 encode: true,
                 success: function (data) {
                     if (data.success === true) {
-                        location.reload();
+                        alert("操作成功");
                     } else {
                         alert(data.message);
                     }

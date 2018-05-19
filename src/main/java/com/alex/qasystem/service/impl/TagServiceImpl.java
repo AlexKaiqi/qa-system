@@ -30,7 +30,7 @@ public class TagServiceImpl implements TagService {
     }
 
     @Override
-    public Tag updateDescription(User user, Integer tagId, String description) throws NotFoundException, AuthException {
+    public Tag updateDescription(User user, Integer tagId, String title, String description) throws NotFoundException, AuthException {
         Tag tag = tagMapper.selectById(tagId);
         if (tag == null) {
             throw new NotFoundException("找不到该标签. tagId: " + tagId);
@@ -39,7 +39,12 @@ public class TagServiceImpl implements TagService {
             throw new AuthException("没有更新标签描述的权限");
         }
         tag.setId(tagId);
-        tag.setDescription(description);
+        if (title != null) {
+            tag.setTitle(title);
+        }
+        if (description != null) {
+            tag.setDescription(description);
+        }
         tagMapper.updateById(tag);
         return tag;
     }

@@ -102,13 +102,16 @@ public class AnswerServiceImpl implements AnswerService {
         Integer groupId = user.getGroupId();
         Answer answer = answerMapper.selectById(answerId);
         if (answer == null) {
+            System.out.println(answerId);
             throw new NotFoundException("回答不存在, answerId: " + answerId);
         }
         if (!answer.getUserId().equals(userId) && user.getGroupId() != 1) {
             throw new AuthException("没有修改回答的权限, userId: " + userId);
         }
+
         answerCommentMapper.deleteByAnswerId(answerId);
         answerApprovalMapper.deleteByAnswerId(answerId);
+
         answerMapper.deleteById(answerId);
         return answer;
     }

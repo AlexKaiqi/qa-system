@@ -2,6 +2,10 @@ package com.alex.qasystem.dto;
 
 import com.alex.qasystem.entity.User;
 import com.alex.qasystem.enums.UserRegistrationStateEnum;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import java.text.SimpleDateFormat;
 
 public class UserRegistrationExecution {
     private Integer state;
@@ -40,5 +44,17 @@ public class UserRegistrationExecution {
 
     public void setUser(User user) {
         this.user = user;
+    }
+
+    @Override
+    public String toString() {
+        try {
+            ObjectMapper objectMapper = new ObjectMapper();
+            objectMapper.setDateFormat(new SimpleDateFormat("yyyy-MM-dd HH:mm"));
+            return objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(this);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+        return "cannot parse object as json" + this.hashCode();
     }
 }

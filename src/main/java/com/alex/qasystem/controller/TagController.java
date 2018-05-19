@@ -4,10 +4,12 @@ import com.alex.qasystem.entity.Tag;
 import com.alex.qasystem.entity.User;
 import com.alex.qasystem.service.TagService;
 import com.alex.qasystem.service.UserService;
+import org.apache.ibatis.javassist.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import javax.security.auth.message.AuthException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -33,7 +35,7 @@ public class TagController {
         Tag tag = tagService.getTagById(tagId);
         if (tag == null) {
             map.put("success", false);
-            map.put("message", "找不到该问题");
+            map.put("message", "找不到该标签");
             return map;
         }
         map.put("success", true);
@@ -88,7 +90,8 @@ public class TagController {
 
     @PutMapping("/tags/{tagId}")
     public Map<String, Object> updateTag(@PathVariable Integer tagId,
-                                         @RequestParam String description,
+                                         @RequestParam(required = false) String title,
+                                         @RequestParam(required = false) String description,
                                          @RequestParam String token) {
         User user = userService.getUserIdByToken(token);
         Map<String, Object> map = new HashMap<>(2);
@@ -98,8 +101,12 @@ public class TagController {
             return map;
         }
         try {
-            tagService.updateDescription(user, tagId, description);
-        } catch (Exception e) {
+            tagService.updateDescription(user, tagId, title, description);
+        }catch (NotFoundException | AuthException e) {
+            map.put("success", false);
+            map.put("message", e.getMessage());
+            return map;
+        }catch (Exception e) {
             e.printStackTrace();
             map.put("success", false);
             map.put("message", "操作失败");

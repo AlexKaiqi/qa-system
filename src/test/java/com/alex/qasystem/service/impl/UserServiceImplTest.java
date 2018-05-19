@@ -37,18 +37,22 @@ public class UserServiceImplTest {
         assertThat(userAuthExecution.getState(), is(UserAuthStateEnum.NULL_AUTH_INFO.getState()));
         userAuthExecution = userService.login(null, "");
         assertThat(userAuthExecution.getState(), is(UserAuthStateEnum.NULL_AUTH_INFO.getState()));
+        System.out.println(userAuthExecution);
 
         // 用户存在, 密码错误
         userAuthExecution = userService.login("alexkai@gmail.com", "wrong-password");
         assertThat(userAuthExecution.getState(), is(UserAuthStateEnum.WRONG_PASSWORD.getState()));
+        System.out.println(userAuthExecution);
 
         // 用户不存在
         userAuthExecution = userService.login("wrong-email@gmail.com", "12345");
         assertThat(userAuthExecution.getState(), is(UserAuthStateEnum.USER_NOT_EXISTS.getState()));
+        System.out.println(userAuthExecution);
 
         // 邮箱密码都正确
         userAuthExecution = userService.login("alexkai@gmail.com", "12345");
         assertThat(userAuthExecution.getState(), is(UserAuthStateEnum.SUCCESS.getState()));
+        System.out.println(userAuthExecution);
     }
 
 

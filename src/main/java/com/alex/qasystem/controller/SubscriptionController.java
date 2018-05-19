@@ -1,5 +1,6 @@
 package com.alex.qasystem.controller;
 
+import com.alex.qasystem.entity.Question;
 import com.alex.qasystem.entity.User;
 import com.alex.qasystem.service.BookmarkService;
 import com.alex.qasystem.service.QuestionSubscriptionService;
@@ -9,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -39,8 +41,57 @@ public class SubscriptionController {
         this.userService = userService;
     }
 
-    @PostMapping("/questions/{questionId}/subscription")
-    public Map<String, Object> addQuestionSubscription(@PathVariable Integer questionId,
+    @GetMapping("/users/{userId}/question-subscriptions")
+    public Map<String, Object> getQuestionSubscriptions(@PathVariable Integer userId,
+                                                        @RequestParam String token) {
+        Map<String, Object> map = new HashMap<>(2);
+        User user = userService.getUserIdByToken(token);
+        if (user == null ) {
+            map.put("success", false);
+            map.put("message", "需要验证身份");
+            return map;
+        }
+        List<Question> subscribedQuestions = questionSubscriptionService.getSubscribedQuestionsByUserId(user.getId());
+        map.put("success", true);
+        map.put("subscribedQuestions", subscribedQuestions);
+        return map;
+    }
+
+    @GetMapping("/users/{userId}/user-subscriptions")
+    public Map<String, Object> getUserSubscriptions(@PathVariable Integer userId,
+                                                        @RequestParam String token) {
+        Map<String, Object> map = new HashMap<>(2);
+        User user = userService.getUserIdByToken(token);
+        if (user == null ) {
+            map.put("success", false);
+            map.put("message", "需要验证身份");
+            return map;
+        }
+        List<User> subscribedUsers = userSubscriptionService.getSubscribedUserByUserId(user.getId());
+        map.put("success", true);
+        map.put("subscribedUsers", subscribedUsers);
+        return map;
+    }
+
+    @GetMapping("/users/{userId}/bookmarks")
+    public Map<String, Object> getBookmarks(@PathVariable Integer userId,
+                                                        @RequestParam String token) {
+        Map<String, Object> map = new HashMap<>(2);
+        User user = userService.getUserIdByToken(token);
+        if (user == null ) {
+            map.put("success", false);
+            map.put("message", "需要验证身份");
+            return map;
+        }
+        List<Question> bookmarks = bookmarkService.selectBookmarkedQuestionByUserId(user.getId());
+        map.put("success", true);
+        map.put("bookmarks", bookmarks);
+        return map;
+    }
+
+    @PostMapping("/users/{userId}/question-subscriptions/{questionId}")
+    public Map<String, Object> addQuestionSubscription(@PathVariable Integer userId,
+                                                       @PathVariable Integer questionId,
                                                        @RequestParam String token) {
         Map<String, Object> map = new HashMap<>(2);
         User user = userService.getUserIdByToken(token);
@@ -60,9 +111,10 @@ public class SubscriptionController {
         return map;
     }
 
-    @DeleteMapping("/questions/{questionId}/subscription")
-    public Map<String, Object> deleteQuestionSubscription(@PathVariable Integer questionId,
-                                                       @RequestParam String token) {
+    @DeleteMapping("/users/{userId}/question-subscriptions/{questionId}")
+    public Map<String, Object> deleteQuestionSubscription(@PathVariable Integer userId,
+                                                          @PathVariable Integer questionId,
+                                                          @RequestParam String token) {
         Map<String, Object> map = new HashMap<>(2);
         User user = userService.getUserIdByToken(token);
         if (user == null) {
@@ -74,15 +126,16 @@ public class SubscriptionController {
             questionSubscriptionService.deleteByUserIdAndQuestionId(user, questionId);
         } catch (Exception e) {
             map.put("success", false);
-            map.put("message", "操作失败");
+            map.put("message", e.getMessage());
             return map;
         }
         map.put("success", true);
         return map;
     }
 
-    @PostMapping("/users/{watchedUserId}/subscription")
-    public Map<String, Object> addUserSubscription(@PathVariable Integer watchedUserId,
+    @PostMapping("/users/{userId}/user-subscriptions/{watchedUserId}")
+    public Map<String, Object> addUserSubscription(@PathVariable Integer userId,
+                                                   @PathVariable Integer watchedUserId,
                                                    @RequestParam String token) {
         Map<String, Object> map = new HashMap<>(2);
         User user = userService.getUserIdByToken(token);
@@ -102,9 +155,10 @@ public class SubscriptionController {
         return map;
     }
 
-    @DeleteMapping("/users/{watchedUserId}/subscription")
-    public Map<String, Object> deleteUserSubscription(@PathVariable Integer watchedUserId,
-                                                   @RequestParam String token) {
+    @DeleteMapping("/users/{userId}/user-subscriptions/{watchedUserId}")
+    public Map<String, Object> deleteUserSubscription(@PathVariable Integer userId,
+                                                      @PathVariable Integer watchedUserId,
+                                                      @RequestParam String token) {
         Map<String, Object> map = new HashMap<>(2);
         User user = userService.getUserIdByToken(token);
         if (user == null) {
@@ -116,15 +170,16 @@ public class SubscriptionController {
             userSubscriptionService.deleteByUserIdAndWatchedUserId(user, watchedUserId);
         } catch (Exception e) {
             map.put("success", false);
-            map.put("message", "操作失败");
+            map.put("message", e.getMessage());
             return map;
         }
         map.put("success", true);
         return map;
     }
 
-    @PostMapping("/questions/{questionId}/bookmark")
-    public Map<String, Object> addBookmark(@PathVariable Integer questionId,
+    @PostMapping("/users/{userId}/bookmarks/{questionId}")
+    public Map<String, Object> addBookmark(@PathVariable Integer userId,
+                                           @PathVariable Integer questionId,
                                            @RequestParam String token) {
         Map<String, Object> map = new HashMap<>(2);
         User user = userService.getUserIdByToken(token);
@@ -144,9 +199,10 @@ public class SubscriptionController {
         return map;
     }
 
-    @DeleteMapping("/questions/{questionId}/bookmark")
-    public Map<String, Object> deleteBookmark(@PathVariable Integer questionId,
-                                           @RequestParam String token) {
+    @DeleteMapping("/users/{userId}/bookmarks/{questionId}")
+    public Map<String, Object> deleteBookmark(@PathVariable Integer userId,
+                                              @PathVariable Integer questionId,
+                                              @RequestParam String token) {
         Map<String, Object> map = new HashMap<>(2);
         User user = userService.getUserIdByToken(token);
         if (user == null) {
@@ -158,7 +214,7 @@ public class SubscriptionController {
             bookmarkService.deleteBookmarkByQuestionId(user, questionId);
         } catch (Exception e) {
             map.put("success", false);
-            map.put("message", "操作失败");
+            map.put("message", e.getMessage());
             return map;
         }
         map.put("success", true);
